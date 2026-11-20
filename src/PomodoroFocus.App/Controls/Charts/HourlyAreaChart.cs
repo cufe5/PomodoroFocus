@@ -178,12 +178,39 @@ namespace PomodoroFocus.App.Controls.Charts
                 dc.DrawEllipse(new SolidColorBrush(strokeColor), new Pen(Brushes.White, 1.5), points[peakHour], 4.0, 4.0);
             }
 
-            // Hover indicator
+            // Hover indicator: vertical dashed crosshair + glowing dot + floating glass pill
             if (_hoverHour >= 0 && _hoverHour < 24)
             {
-                var hPen = new Pen(new SolidColorBrush(Color.FromArgb(0x66, strokeColor.R, strokeColor.G, strokeColor.B)), 1.0);
-                dc.DrawLine(hPen, new Point(points[_hoverHour].X, topPad), new Point(points[_hoverHour].X, topPad + plotH));
-                dc.DrawEllipse(Brushes.White, new Pen(new SolidColorBrush(strokeColor), 2.0), points[_hoverHour], 4.5, 4.5);
+                Point hp = points[_hoverHour];
+                var hPen = new Pen(new SolidColorBrush(Color.FromArgb(0x88, strokeColor.R, strokeColor.G, strokeColor.B)), 1.0);
+                hPen.DashStyle = new DashStyle(new double[] { 3, 3 }, 0);
+                dc.DrawLine(hPen, new Point(hp.X, topPad), new Point(hp.X, topPad + plotH));
+
+                dc.DrawEllipse(new SolidColorBrush(Color.FromArgb(0x38, strokeColor.R, strokeColor.G, strokeColor.B)), null, hp, 8.5, 8.5);
+                dc.DrawEllipse(Brushes.White, new Pen(new SolidColorBrush(strokeColor), 2.0), hp, 5.0, 5.0);
+
+                string tipText = string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0:D2}:00 \u2013 {1:D2}:00 · {2:0} 分钟",
+                    _hoverHour, (_hoverHour + 1) % 24, Math.Round(data[_hoverHour]));
+                var pillTypeface = new Typeface(new FontFamily("Segoe UI Variable Text, Microsoft YaHei UI"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal);
+                Brush pillBg = GetResBrush("Surface.Solid", new SolidColorBrush(Color.FromRgb(0x20, 0x20, 0x24)));
+                Brush pillBorder = GetResBrush("Stroke.Strong", new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0xFF)));
+                Brush pillTextBrush = GetResBrush("Text.Primary", Brushes.White);
+
+                var tipFt = new FormattedText(
+                    tipText, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+                    pillTypeface, 11.0, pillTextBrush, dpi);
+                double pillW = tipFt.Width + 16.0;
+                double pillH = tipFt.Height + 8.0;
+                double px = hp.X - pillW * 0.5;
+                if (px < 4.0) px = 4.0;
+                if (px + pillW > w - 4.0) px = w - pillW - 4.0;
+                double py = hp.Y - pillH - 10.0;
+                if (py < 2.0) py = 2.0;
+
+                dc.DrawRoundedRectangle(pillBg, new Pen(pillBorder, 1.0), new Rect(px, py, pillW, pillH), 7.0, 7.0);
+                dc.DrawText(tipFt, new Point(px + 8.0, py + 4.0));
             }
 
             // X-axis labels: 00:00, 06:00, 12:00, 18:00, 23:00

@@ -12,23 +12,24 @@ namespace PomodoroFocus.App.Controls.Charts
     {
         public static readonly DependencyProperty CellsProperty = DependencyProperty.Register(
             "Cells", typeof(IList<HeatmapCell>), typeof(FocusHeatmapControl),
-            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
 
-        public event EventHandler<int> VisibleWeeksChanged;
+        public static readonly DependencyProperty TargetWeeksProperty = DependencyProperty.Register(
+            "TargetWeeks", typeof(int), typeof(FocusHeatmapControl),
+            new FrameworkPropertyMetadata(20, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
 
-        private const double CellSize = 13.0;
-        private const double CellGap = 3.0;
-        private const double Step = CellSize + CellGap;
         private const double LeftAxisWidth = 34.0;
         private const double TopAxisHeight = 20.0;
 
-        private int _lastComputedWeeks = 26;
         private int _hoverCellIndex = -1;
 
         public FocusHeatmapControl()
         {
-            Height = TopAxisHeight + 7 * Step + 6.0;
-            SizeChanged += OnControlSizeChanged;
+            SizeChanged += delegate
+            {
+                InvalidateMeasure();
+                InvalidateVisual();
+            };
             MouseMove += OnHeatmapMouseMove;
             MouseLeave += delegate
             {
@@ -43,23 +44,88 @@ namespace PomodoroFocus.App.Controls.Charts
             set { SetValue(CellsProperty, value); }
         }
 
-        public int ComputedWeeks
+        public int TargetWeeks
         {
-            get { return _lastComputedWeeks; }
+            get { return (int)GetValue(TargetWeeksProperty); }
+            set { SetValue(TargetWeeksProperty, value); }
         }
 
-        private void OnControlSizeChanged(object sender, SizeChangedEventArgs e)
+        private int GetEffectiveWeeks()
         {
-            int cols = (int)Math.Floor((ActualWidth - LeftAxisWidth - 4.0) / Step);
-            if (cols < 12) cols = 12;
-            if (cols > 52) cols = 52;
-            if (cols != _lastComputedWeeks)
+            IList<HeatmapCell> cells = Cells;
+            if (cells != null && cells.Count >= 7)
             {
-                _lastComputedWeeks = cols;
-                var handler = VisibleWeeksChanged;
-                if (handler != null) handler(this, cols);
+                return Math.Max(1, cells.Count / 7);
             }
-            InvalidateVisual();
+            int tw = TargetWeeks;
+            return tw > 0 ? tw : 20;
+        }
+
+        private static void ComputeGridMetrics(
+            double totalWidth,
+            int weeks,
+            out double cellSize,
+            out double cellGap,
+            out double radius,
+            out double labelX,
+            out double gridStartX)
+        {
+            if (weeks < 1) weeks = 1;
+            double safeWidth = double.IsNaN(totalWidth) || double.IsInfinity(totalWidth) || totalWidth < 200.0
+                ? 760.0
+                : totalWidth;
+            double availW = Math.Max(120.0, safeWidth - LeftAxisWidth - 4.0);
+
+            if (weeks <= 24)
+            {
+                cellGap = 4.0;
+                cellSize = Math.Floor((availW - (weeks - 1) * cellGap) / weeks);
+                if (cellSize < 16.0) cellSize = 16.0;
+                if (cellSize > 26.0) cellSize = 26.0;
+                radius = 4.5;
+            }
+            else
+            {
+                cellGap = 3.0;
+                cellSize = Math.Floor((availW - (weeks - 1) * cellGap) / weeks);
+                if (cellSize < 10.0) cellSize = 10.0;
+                if (cellSize > 14.0) cellSize = 14.0;
+                radius = 3.0;
+            }
+
+            double gridW = weeks * cellSize + Math.Max(0, weeks - 1) * cellGap;
+            double blockW = LeftAxisWidth + gridW;
+            if (safeWidth > blockW + 8.0)
+            {
+                labelX = Math.Floor((safeWidth - blockW) * 0.5);
+                gridStartX = labelX + LeftAxisWidth;
+            }
+            else
+            {
+                labelX = 0.0;
+                gridStartX = LeftAxisWidth;
+            }
+        }
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            int weeks = GetEffectiveWeeks();
+            double w = (!double.IsInfinity(availableSize.Width) && !double.IsNaN(availableSize.Width) && availableSize.Width > 0)
+                ? availableSize.Width
+                : (ActualWidth > 0 ? ActualWidth : 760.0);
+
+            double cellSize;
+            double cellGap;
+            double radius;
+            double labelX;
+            double gridStartX;
+            ComputeGridMetrics(w, weeks, out cellSize, out cellGap, out radius, out labelX, out gridStartX);
+
+            double h = TopAxisHeight + 7.0 * (cellSize + cellGap) + 6.0;
+            double desiredW = (!double.IsInfinity(availableSize.Width) && !double.IsNaN(availableSize.Width))
+                ? availableSize.Width
+                : (LeftAxisWidth + weeks * (cellSize + cellGap));
+            return new Size(desiredW, h);
         }
 
         private void OnHeatmapMouseMove(object sender, MouseEventArgs e)
@@ -67,10 +133,19 @@ namespace PomodoroFocus.App.Controls.Charts
             IList<HeatmapCell> cells = Cells;
             if (cells == null || cells.Count == 0) return;
 
+            int weeks = GetEffectiveWeeks();
+            double cellSize;
+            double cellGap;
+            double radius;
+            double labelX;
+            double gridStartX;
+            ComputeGridMetrics(ActualWidth, weeks, out cellSize, out cellGap, out radius, out labelX, out gridStartX);
+            double step = cellSize + cellGap;
+
             Point pt = e.GetPosition(this);
-            int col = (int)Math.Floor((pt.X - LeftAxisWidth) / Step);
-            int row = (int)Math.Floor((pt.Y - TopAxisHeight) / Step);
-            if (col < 0 || row < 0 || row >= 7)
+            int col = (int)Math.Floor((pt.X - gridStartX) / step);
+            int row = (int)Math.Floor((pt.Y - TopAxisHeight) / step);
+            if (col < 0 || col >= weeks || row < 0 || row >= 7)
             {
                 if (_hoverCellIndex != -1)
                 {
@@ -108,6 +183,15 @@ namespace PomodoroFocus.App.Controls.Charts
             IList<HeatmapCell> cells = Cells;
             if (cells == null || cells.Count == 0) return;
 
+            int weeks = Math.Max(1, cells.Count / 7);
+            double cellSize;
+            double cellGap;
+            double radius;
+            double labelX;
+            double gridStartX;
+            ComputeGridMetrics(ActualWidth, weeks, out cellSize, out cellGap, out radius, out labelX, out gridStartX);
+            double step = cellSize + cellGap;
+
             double dpi = VisualTreeHelper.GetDpi(this).PixelsPerDip;
             var typeface = new Typeface(new FontFamily("Segoe UI Variable Text, Microsoft YaHei UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
             Brush labelBrush = GetResBrush("Text.Tertiary", Brushes.Gray);
@@ -115,10 +199,10 @@ namespace PomodoroFocus.App.Controls.Charts
             Brush[] levelBrushes = new Brush[]
             {
                 GetResBrush("Heat.L0", new SolidColorBrush(Color.FromArgb(0x14, 0xFF, 0xFF, 0xFF))),
-                GetResBrush("Heat.L1", new SolidColorBrush(Color.FromArgb(0x47, 0xFF, 0x6B, 0x5E))),
-                GetResBrush("Heat.L2", new SolidColorBrush(Color.FromArgb(0x80, 0xFF, 0x6B, 0x5E))),
-                GetResBrush("Heat.L3", new SolidColorBrush(Color.FromArgb(0xBF, 0xFF, 0x6B, 0x5E))),
-                GetResBrush("Heat.L4", new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x6B, 0x5E)))
+                GetResBrush("Heat.L1", new SolidColorBrush(Color.FromArgb(0x47, 0x30, 0xD1, 0x58))),
+                GetResBrush("Heat.L2", new SolidColorBrush(Color.FromArgb(0x80, 0x30, 0xD1, 0x58))),
+                GetResBrush("Heat.L3", new SolidColorBrush(Color.FromArgb(0xBF, 0x30, 0xD1, 0x58))),
+                GetResBrush("Heat.L4", new SolidColorBrush(Color.FromArgb(0xFF, 0x30, 0xD1, 0x58)))
             };
 
             // Left weekday labels: 周一 / 周三 / 周五 / 周日
@@ -127,16 +211,15 @@ namespace PomodoroFocus.App.Controls.Charts
             for (int i = 0; i < rows.Length; i++)
             {
                 var ft = new FormattedText(rowNames[i], CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10.5, labelBrush, dpi);
-                double y = TopAxisHeight + rows[i] * Step + (CellSize - ft.Height) * 0.5;
-                dc.DrawText(ft, new Point(0, y));
+                double y = TopAxisHeight + rows[i] * step + (cellSize - ft.Height) * 0.5;
+                dc.DrawText(ft, new Point(labelX, y));
             }
 
             int lastMonth = -1;
-            int weeks = cells.Count / 7;
             for (int w = 0; w < weeks; w++)
             {
-                double x = LeftAxisWidth + w * Step;
-                if (x + CellSize > ActualWidth + 2) break;
+                double x = gridStartX + w * step;
+                if (x + cellSize > ActualWidth + 2.0) break;
 
                 HeatmapCell monday = cells[w * 7];
                 if (monday.Date.Month != lastMonth)
@@ -157,8 +240,8 @@ namespace PomodoroFocus.App.Controls.Charts
                     if (lvl < 0) lvl = 0;
                     if (lvl > 4) lvl = 4;
 
-                    double y = TopAxisHeight + r * Step;
-                    dc.DrawRoundedRectangle(levelBrushes[lvl], null, new Rect(x, y, CellSize, CellSize), 3.0, 3.0);
+                    double y = TopAxisHeight + r * step;
+                    dc.DrawRoundedRectangle(levelBrushes[lvl], null, new Rect(x, y, cellSize, cellSize), radius, radius);
                 }
             }
         }

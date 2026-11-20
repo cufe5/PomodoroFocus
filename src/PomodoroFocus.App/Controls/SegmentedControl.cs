@@ -46,23 +46,32 @@ namespace PomodoroFocus.App.Controls
 
         public SegmentedControl()
         {
-            CornerRadius = new CornerRadius(20);
-            Padding = new Thickness(4);
-            BorderThickness = new Thickness(1);
-            SetResourceReference(BackgroundProperty, "Surface.1");
-            SetResourceReference(BorderBrushProperty, "Stroke.Subtle");
+            CornerRadius = new CornerRadius(9);
+            Padding = new Thickness(3);
+            BorderThickness = new Thickness(0);
+            SetResourceReference(BackgroundProperty, "Segment.Track");
             SnapsToDevicePixels = true;
 
             _rootGrid = new Grid();
             _indicatorTransform = new TranslateTransform(0, 0);
             _indicator = new Border
             {
-                CornerRadius = new CornerRadius(16),
+                CornerRadius = new CornerRadius(7),
+                BorderThickness = new Thickness(0, 0.5, 0, 0),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 RenderTransform = _indicatorTransform,
-                IsHitTestVisible = false
+                IsHitTestVisible = false,
+                Effect = new System.Windows.Media.Effects.DropShadowEffect
+                {
+                    Color = Colors.Black,
+                    BlurRadius = 6,
+                    ShadowDepth = 1.5,
+                    Direction = 270,
+                    Opacity = 0.16
+                }
             };
+            _indicator.SetResourceReference(Border.BorderBrushProperty, "Stroke.Highlight");
             UpdateIndicatorBrush();
 
             _buttonsGrid = new UniformGrid { Rows = 1 };
@@ -119,14 +128,8 @@ namespace PomodoroFocus.App.Controls
 
         private void UpdateIndicatorBrush()
         {
-            if (UsePhaseAccent)
-            {
-                _indicator.SetResourceReference(BackgroundProperty, "Phase.SoftBrush");
-            }
-            else
-            {
-                _indicator.SetResourceReference(BackgroundProperty, "Surface.3");
-            }
+            _indicator.SetResourceReference(BackgroundProperty, "Segment.Thumb");
+            CornerRadius = SegmentHeight >= 34 ? new CornerRadius(10) : new CornerRadius(9);
         }
 
         private void RebuildButtons()
@@ -134,6 +137,7 @@ namespace PomodoroFocus.App.Controls
             _buttonsGrid.Children.Clear();
             _buttons.Clear();
             _indicatorInitialized = false;
+            CornerRadius = SegmentHeight >= 34 ? new CornerRadius(10) : new CornerRadius(9);
 
             IList<SegmentOption> list = Items;
             if (list == null || list.Count == 0) return;
@@ -150,8 +154,8 @@ namespace PomodoroFocus.App.Controls
                     Background = Brushes.Transparent,
                     BorderThickness = new Thickness(0),
                     Cursor = System.Windows.Input.Cursors.Hand,
-                    FontSize = SegmentHeight >= 36 ? 13.5 : 12.5,
-                    FontWeight = FontWeights.SemiBold,
+                    FontSize = SegmentHeight >= 34 ? 13.0 : 12.5,
+                    FontWeight = FontWeights.Normal,
                     Padding = new Thickness(10, 0, 10, 0),
                     Template = CreatePlainSegmentTemplate()
                 };
@@ -189,11 +193,13 @@ namespace PomodoroFocus.App.Controls
                 bool isSel = string.Equals(btn.Tag as string, sel, StringComparison.Ordinal);
                 if (isSel)
                 {
-                    btn.SetResourceReference(Control.ForegroundProperty, UsePhaseAccent ? "Phase.StartBrush" : "Text.Primary");
+                    btn.SetResourceReference(Control.ForegroundProperty, "Text.Primary");
+                    btn.FontWeight = FontWeights.SemiBold;
                 }
                 else
                 {
                     btn.SetResourceReference(Control.ForegroundProperty, "Text.Secondary");
+                    btn.FontWeight = FontWeights.Normal;
                 }
             }
         }

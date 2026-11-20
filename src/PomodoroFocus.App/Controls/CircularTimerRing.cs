@@ -38,7 +38,7 @@ namespace PomodoroFocus.App.Controls
 
         private static readonly DependencyProperty BreathFactorProperty = DependencyProperty.Register(
             "BreathFactor", typeof(double), typeof(CircularTimerRing),
-            new FrameworkPropertyMetadata(0.05, FrameworkPropertyMetadataOptions.AffectsRender));
+            new FrameworkPropertyMetadata(0.02, FrameworkPropertyMetadataOptions.AffectsRender));
 
         private static readonly DependencyProperty ParticleProgressProperty = DependencyProperty.Register(
             "ParticleProgress", typeof(double), typeof(CircularTimerRing),
@@ -125,9 +125,9 @@ namespace PomodoroFocus.App.Controls
             {
                 var anim = new DoubleAnimation
                 {
-                    From = 0.06,
-                    To = 0.14,
-                    Duration = new Duration(TimeSpan.FromSeconds(1.5)),
+                    From = 0.03,
+                    To = 0.08,
+                    Duration = new Duration(TimeSpan.FromSeconds(1.8)),
                     AutoReverse = true,
                     RepeatBehavior = RepeatBehavior.Forever,
                     EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut }
@@ -137,7 +137,7 @@ namespace PomodoroFocus.App.Controls
             else
             {
                 BeginAnimation(BreathFactorProperty, null);
-                BreathFactor = IsRunning ? 0.10 : 0.05;
+                BreathFactor = IsRunning ? 0.05 : 0.02;
             }
         }
 
@@ -183,25 +183,25 @@ namespace PomodoroFocus.App.Controls
             Color endColor = ExtractColor(PhaseEndBrush, Color.FromRgb(0xFF, 0x9F, 0x68));
             Color tickBaseColor = ExtractColor(TickBrush, Color.FromArgb(0x40, 0xFF, 0xFF, 0xFF));
 
-            // 1. Ambient soft glow ring
+            // 1. Ambient soft glow ring (restrained Apple Watch vibrancy)
             byte glowAlpha = (byte)Math.Max(0, Math.Min(255, (int)(BreathFactor * 255.0)));
-            var glowPen = new Pen(new SolidColorBrush(Color.FromArgb(glowAlpha, startColor.R, startColor.G, startColor.B)), 24.0);
+            var glowPen = new Pen(new SolidColorBrush(Color.FromArgb(glowAlpha, startColor.R, startColor.G, startColor.B)), 16.0);
             dc.DrawEllipse(null, glowPen, new Point(cx, cy), r, r);
 
-            // 2. Outer 60 ticks
+            // 2. Outer 60 fine ticks (Swiss / Apple Watch dial precision)
             double progressDeg = p * 360.0;
-            var majorPen = new Pen(new SolidColorBrush(tickBaseColor), 1.5);
+            var majorPen = new Pen(new SolidColorBrush(tickBaseColor), 1.2);
             majorPen.StartLineCap = PenLineCap.Round;
             majorPen.EndLineCap = PenLineCap.Round;
-            var minorPen = new Pen(new SolidColorBrush(Color.FromArgb((byte)(tickBaseColor.A * 0.5), tickBaseColor.R, tickBaseColor.G, tickBaseColor.B)), 1.0);
+            var minorPen = new Pen(new SolidColorBrush(Color.FromArgb((byte)(tickBaseColor.A * 0.45), tickBaseColor.R, tickBaseColor.G, tickBaseColor.B)), 0.75);
             minorPen.StartLineCap = PenLineCap.Round;
             minorPen.EndLineCap = PenLineCap.Round;
 
-            Color passedColor = Color.FromArgb(0x88, startColor.R, startColor.G, startColor.B);
-            var passedMajorPen = new Pen(new SolidColorBrush(passedColor), 1.5);
+            Color passedColor = Color.FromArgb(0x99, startColor.R, startColor.G, startColor.B);
+            var passedMajorPen = new Pen(new SolidColorBrush(passedColor), 1.2);
             passedMajorPen.StartLineCap = PenLineCap.Round;
             passedMajorPen.EndLineCap = PenLineCap.Round;
-            var passedMinorPen = new Pen(new SolidColorBrush(Color.FromArgb(0x55, startColor.R, startColor.G, startColor.B)), 1.0);
+            var passedMinorPen = new Pen(new SolidColorBrush(Color.FromArgb(0x5A, startColor.R, startColor.G, startColor.B)), 0.75);
             passedMinorPen.StartLineCap = PenLineCap.Round;
             passedMinorPen.EndLineCap = PenLineCap.Round;
 
@@ -212,8 +212,8 @@ namespace PomodoroFocus.App.Controls
                 bool isMajor = (i % 5 == 0);
                 bool isPassed = (p > 0.005 && deg <= progressDeg);
 
-                double innerR = r + 13.0;
-                double outerR = isMajor ? (innerR + 5.0) : (innerR + 2.5);
+                double innerR = r + 12.0;
+                double outerR = isMajor ? (innerR + 4.5) : (innerR + 2.2);
                 double cos = Math.Cos(rad);
                 double sin = Math.Sin(rad);
 
@@ -227,13 +227,13 @@ namespace PomodoroFocus.App.Controls
             }
 
             // 3. Track base ring
-            var trackPen = new Pen(TrackBrush ?? Brushes.Gray, 10.0);
+            var trackPen = new Pen(TrackBrush ?? Brushes.Gray, 10.5);
             dc.DrawEllipse(null, trackPen, new Point(cx, cy), r, r);
 
             // 4. Main progress arc
             double theta = p * 360.0;
             Brush arcBrush = PhaseGradient ?? PhaseStartBrush ?? Brushes.Coral;
-            var arcPen = new Pen(arcBrush, 10.0);
+            var arcPen = new Pen(arcBrush, 10.5);
             arcPen.StartLineCap = PenLineCap.Round;
             arcPen.EndLineCap = PenLineCap.Round;
 
@@ -270,12 +270,12 @@ namespace PomodoroFocus.App.Controls
                 var tipPt = new Point(cx + r * Math.Cos(tipRad), cy + r * Math.Sin(tipRad));
 
                 var tipGlow = new RadialGradientBrush();
-                tipGlow.GradientStops.Add(new GradientStop(Color.FromArgb(0x99, endColor.R, endColor.G, endColor.B), 0.0));
+                tipGlow.GradientStops.Add(new GradientStop(Color.FromArgb(0x88, endColor.R, endColor.G, endColor.B), 0.0));
                 tipGlow.GradientStops.Add(new GradientStop(Color.FromArgb(0x00, endColor.R, endColor.G, endColor.B), 1.0));
-                dc.DrawEllipse(tipGlow, null, tipPt, 12.0, 12.0);
+                dc.DrawEllipse(tipGlow, null, tipPt, 9.0, 9.0);
 
-                var dotPen = new Pen(new SolidColorBrush(endColor), 2.0);
-                dc.DrawEllipse(Brushes.White, dotPen, tipPt, 4.5, 4.5);
+                var dotPen = new Pen(new SolidColorBrush(endColor), 1.8);
+                dc.DrawEllipse(Brushes.White, dotPen, tipPt, 4.0, 4.0);
             }
 
             // 6. Completion 18-particle burst

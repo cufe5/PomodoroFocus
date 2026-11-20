@@ -128,7 +128,14 @@ namespace PomodoroFocus.App.Controls.Charts
             Brush phaseGrad = GetResBrush("Phase.Gradient", phaseStart);
 
             Color startColor = (phaseStart is SolidColorBrush) ? ((SolidColorBrush)phaseStart).Color : Color.FromRgb(0xFF, 0x6B, 0x5E);
-            var normalBarBrush = new SolidColorBrush(Color.FromArgb(0x8C, startColor.R, startColor.G, startColor.B));
+            var normalBarBrush = new LinearGradientBrush
+            {
+                StartPoint = new Point(0, 0),
+                EndPoint = new Point(0, 1)
+            };
+            normalBarBrush.GradientStops.Add(new GradientStop(Color.FromArgb(0xCC, startColor.R, startColor.G, startColor.B), 0.0));
+            normalBarBrush.GradientStops.Add(new GradientStop(Color.FromArgb(0x55, startColor.R, startColor.G, startColor.B), 1.0));
+            var topHighlightPen = new Pen(new SolidColorBrush(Color.FromArgb(0x55, 0xFF, 0xFF, 0xFF)), 1.0);
 
             const double leftPad = 36.0;
             const double rightPad = 14.0;
@@ -205,9 +212,11 @@ namespace PomodoroFocus.App.Controls.Charts
 
                 if (rawH > 0.5)
                 {
-                    Brush fill = (pt.IsToday || i == _hoverIndex) ? phaseGrad : normalBarBrush;
+                    bool isEmphasized = pt.IsToday || i == _hoverIndex;
+                    Brush fill = isEmphasized ? phaseGrad : normalBarBrush;
                     double rad = Math.Min(6.0, Math.Min(barW * 0.5, rawH * 0.5));
-                    dc.DrawGeometry(fill, null, CreateTopRoundedRect(rect, rad));
+                    Geometry barGeo = CreateTopRoundedRect(rect, rad);
+                    dc.DrawGeometry(fill, isEmphasized ? topHighlightPen : null, barGeo);
                 }
 
                 if (i % labelStep == 0 || i == count - 1)
@@ -218,6 +227,34 @@ namespace PomodoroFocus.App.Controls.Charts
                         CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                         typeface, 11.0, lblBrush, dpi);
                     dc.DrawText(xFt, new Point(cx - xFt.Width * 0.5, topPad + plotH + 6));
+                }
+            }
+
+            // On-canvas floating glass pill tooltip when hovering a bar
+            if (_hoverIndex >= 0 && _hoverIndex < pts.Count && _hoverIndex < _barRects.Count)
+            {
+                string tipText = pts[_hoverIndex].TooltipTitle ?? string.Empty;
+                if (tipText.Length > 0)
+                {
+                    var pillTypeface = new Typeface(new FontFamily("Segoe UI Variable Text, Microsoft YaHei UI"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal);
+                    Brush pillBg = GetResBrush("Surface.Solid", new SolidColorBrush(Color.FromRgb(0x20, 0x20, 0x24)));
+                    Brush pillBorder = GetResBrush("Stroke.Strong", new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0xFF)));
+                    Brush pillTextBrush = GetResBrush("Text.Primary", Brushes.White);
+
+                    var tipFt = new FormattedText(
+                        tipText, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+                        pillTypeface, 11.0, pillTextBrush, dpi);
+                    double pillW = tipFt.Width + 16.0;
+                    double pillH = tipFt.Height + 8.0;
+                    Rect barR = _barRects[_hoverIndex];
+                    double px = barR.Left + (barR.Width - pillW) * 0.5;
+                    if (px < 4.0) px = 4.0;
+                    if (px + pillW > w - 4.0) px = w - pillW - 4.0;
+                    double py = barR.Top - pillH - 6.0;
+                    if (py < 2.0) py = 2.0;
+
+                    dc.DrawRoundedRectangle(pillBg, new Pen(pillBorder, 1.0), new Rect(px, py, pillW, pillH), 7.0, 7.0);
+                    dc.DrawText(tipFt, new Point(px + 8.0, py + 4.0));
                 }
             }
         }

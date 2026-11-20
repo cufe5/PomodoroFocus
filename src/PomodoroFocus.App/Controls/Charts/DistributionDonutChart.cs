@@ -15,12 +15,12 @@ namespace PomodoroFocus.App.Controls.Charts
 
         private static readonly Color[] Palette = new Color[]
         {
-            Color.FromRgb(0xFF, 0x6B, 0x5E),
-            Color.FromRgb(0x2D, 0xD4, 0xBF),
-            Color.FromRgb(0x7C, 0x83, 0xFF),
-            Color.FromRgb(0xFB, 0xBF, 0x24),
-            Color.FromRgb(0x60, 0xA5, 0xFA),
-            Color.FromRgb(0x94, 0xA3, 0xB8)
+            Color.FromRgb(0x0A, 0x84, 0xFF), // Apple System Blue
+            Color.FromRgb(0xFF, 0x45, 0x3A), // Apple System Red
+            Color.FromRgb(0x30, 0xD1, 0x58), // Apple System Green
+            Color.FromRgb(0x5E, 0x5C, 0xE6), // Apple System Indigo
+            Color.FromRgb(0xFF, 0x9F, 0x0A), // Apple System Orange
+            Color.FromRgb(0x64, 0xD2, 0xFF)  // Apple System Teal
         };
 
         public DistributionDonutChart()
