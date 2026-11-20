@@ -11,7 +11,9 @@ namespace PomodoroFocus.App.Interop
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
         private const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
         private const int DWMWA_BORDER_COLOR = 34;
+        private const int DWMWA_SYSTEMBACKDROP_TYPE = 38;
         private const int DWMWCP_ROUND = 2;
+        private const int DWMSBT_MAINWINDOW = 2; // Mica
 
         [DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
@@ -33,6 +35,9 @@ namespace PomodoroFocus.App.Interop
                 // COLORREF is 0x00BBGGRR
                 int colorRef = (borderColor.B << 16) | (borderColor.G << 8) | borderColor.R;
                 DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, ref colorRef, sizeof(int));
+
+                int backdrop = DWMSBT_MAINWINDOW;
+                DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, ref backdrop, sizeof(int));
             }
             catch
             {

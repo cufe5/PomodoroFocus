@@ -344,11 +344,11 @@ namespace PomodoroFocus.App
                     _mainVm.TaskDraftTags.Add("核心");
                     RenderFlushAndSave(_mainWindow, Path.Combine(outDir, "05_task_edit_dialog.png"));
                 },
-                // 06: Stats View (expand height temporarily so 4 KPI + Trend + Donut + 24h + Heatmap + History all fit cleanly)
+                // 06: Stats View (expand height temporarily so 4 KPI + Trend + Donut + 24h + 20-week Heatmap + History all fit cleanly)
                 delegate
                 {
                     _mainVm.CloseAllModals();
-                    _mainWindow.Height = 1080;
+                    _mainWindow.Height = 1140;
                     _mainVm.NavigateTo("stats");
                     _mainVm.StatsVM.RefreshAll();
                     RenderFlushAndSave(_mainWindow, Path.Combine(outDir, "06_stats_view.png"));
@@ -388,6 +388,21 @@ namespace PomodoroFocus.App
                     mini.ApplyOpacitySetting(1.0);
                     RenderFlushAndSave(mini, Path.Combine(outDir, "10_mini_floating_window.png"));
                     mini.Close();
+                },
+                // 11: Midnight Focus Zen Mode (Inspector Right Rail Collapsed, 1080x720)
+                delegate
+                {
+                    _mainWindow.Width = 1080;
+                    _mainWindow.Height = 720;
+                    _mainVm.IsCompactLayout = false;
+                    _mainVm.IsZenMode = true;
+                    _mainVm.SwitchTheme("midnight", true);
+                    _mainVm.NavigateTo("focus");
+                    _mainVm.Engine.SetDemoState(TimerMode.Pomodoro, TimerPhase.Focus, TimerRunState.Running, 18 * 60 + 42, 1);
+                    _mainVm.ThemeService.AnimatePhaseBrush(TimerPhase.Focus, true);
+                    _mainVm.AudioVM.SyncMixerGateAndStatus();
+                    RenderFlushAndSave(_mainWindow, Path.Combine(outDir, "11_focus_zen_mode.png"));
+                    _mainVm.IsZenMode = false;
                 }
             };
 

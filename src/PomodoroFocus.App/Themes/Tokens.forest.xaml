@@ -3,69 +3,75 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
     <sys:Boolean x:Key="IsDark">True</sys:Boolean>
-    <sys:Double x:Key="Bg.Glow1.Alpha">0.18</sys:Double>
-    <sys:Double x:Key="Shadow.Opacity">0.45</sys:Double>
+    <sys:Double x:Key="Bg.Glow1.Alpha">0.09</sys:Double>
+    <sys:Double x:Key="Shadow.Opacity">0.42</sys:Double>
     <sys:Double x:Key="Card.ShadowOpacity">0.0</sys:Double>
-    <sys:Double x:Key="Glow.Opacity">0.55</sys:Double>
+    <sys:Double x:Key="Glow.Opacity">0.38</sys:Double>
 
-    <Color x:Key="Bg.Base.Color">#FF09120F</Color>
-    <Color x:Key="Bg.Glow2.Color">#1A0EA5E9</Color>
-    <Color x:Key="Surface.Solid.Color">#FF121D19</Color>
-    <Color x:Key="Stroke.Strong.Color">#26E6FFF2</Color>
-    <Color x:Key="Text.Primary.Color">#FFEAF5EF</Color>
-    <Color x:Key="Text.Tertiary.Color">#FF62786E</Color>
-    <Color x:Key="Accent.Color">#FF3DDC97</Color>
+    <Color x:Key="Bg.Base.Color">#FF0A100D</Color>
+    <Color x:Key="Bg.Glow2.Color">#1430D158</Color>
+    <Color x:Key="Surface.Solid.Color">#FF17231E</Color>
+    <Color x:Key="Stroke.Strong.Color">#29E8FFF2</Color>
+    <Color x:Key="Text.Primary.Color">#FFEEF7F2</Color>
+    <Color x:Key="Text.Tertiary.Color">#FF657A70</Color>
+    <Color x:Key="Accent.Color">#FF30D158</Color>
     <Color x:Key="Shadow.Color">#FF000000</Color>
-    <Color x:Key="DwmBorder.Color">#FF22332C</Color>
+    <Color x:Key="DwmBorder.Color">#FF22302A</Color>
 
-    <Color x:Key="Phase.Focus.Start">#FFFF7A66</Color>
-    <Color x:Key="Phase.Focus.End">#FFFFB37A</Color>
-    <Color x:Key="Phase.Short.Start">#FF3DDC97</Color>
-    <Color x:Key="Phase.Short.End">#FFA7F3D0</Color>
-    <Color x:Key="Phase.Long.Start">#FF5AA9FA</Color>
-    <Color x:Key="Phase.Long.End">#FFA78BFA</Color>
+    <Color x:Key="Phase.Focus.Start">#FFFF453A</Color>
+    <Color x:Key="Phase.Focus.End">#FFFF7A59</Color>
+    <Color x:Key="Phase.Short.Start">#FF30D158</Color>
+    <Color x:Key="Phase.Short.End">#FF66F2A8</Color>
+    <Color x:Key="Phase.Long.Start">#FF0A84FF</Color>
+    <Color x:Key="Phase.Long.End">#FF5E5CE6</Color>
 
-    <SolidColorBrush x:Key="Bg.Base" Color="#FF09120F" />
-    <SolidColorBrush x:Key="Bg.Glow2" Color="#1A0EA5E9" />
-    <SolidColorBrush x:Key="Sidebar.Bg" Color="#66050B09" />
-    <SolidColorBrush x:Key="Surface.1" Color="#0BEFFFF6" />
-    <SolidColorBrush x:Key="Surface.2" Color="#14EFFFF6" />
-    <SolidColorBrush x:Key="Surface.3" Color="#1FEFFFF6" />
-    <SolidColorBrush x:Key="Surface.Solid" Color="#FF121D19" />
-    <SolidColorBrush x:Key="Overlay" Color="#99000000" />
-    <SolidColorBrush x:Key="Stroke.Subtle" Color="#14E6FFF2" />
-    <SolidColorBrush x:Key="Stroke.Strong" Color="#26E6FFF2" />
-    <SolidColorBrush x:Key="Stroke.Highlight" Color="#1AEFFFF6" />
+    <SolidColorBrush x:Key="Bg.Base" Color="#FF0A100D" />
+    <SolidColorBrush x:Key="Bg.Glow2" Color="#1430D158" />
+    <SolidColorBrush x:Key="Sidebar.Bg" Color="#FF101915" />
+    <SolidColorBrush x:Key="Sidebar.ItemSelected" Color="#FF1E2C26" />
+    <SolidColorBrush x:Key="Surface.1" Color="#FF141F1A" />
+    <SolidColorBrush x:Key="Surface.2" Color="#FF1D2B25" />
+    <SolidColorBrush x:Key="Surface.3" Color="#FF263730" />
+    <SolidColorBrush x:Key="Surface.Solid" Color="#FF17231E" />
+    <SolidColorBrush x:Key="Overlay" Color="#88000000" />
+    <SolidColorBrush x:Key="Stroke.Subtle" Color="#16E8FFF2" />
+    <SolidColorBrush x:Key="Stroke.Strong" Color="#29E8FFF2" />
+    <SolidColorBrush x:Key="Stroke.Highlight" Color="#1FEFFFF6" />
 
-    <SolidColorBrush x:Key="Text.Primary" Color="#FFEAF5EF" />
-    <SolidColorBrush x:Key="Text.Secondary" Color="#FF9BB3A8" />
-    <SolidColorBrush x:Key="Text.Tertiary" Color="#FF62786E" />
-    <SolidColorBrush x:Key="Text.Disabled" Color="#FF3F4F48" />
+    <SolidColorBrush x:Key="Text.Primary" Color="#FFEEF7F2" />
+    <SolidColorBrush x:Key="Text.Secondary" Color="#FF9AB0A5" />
+    <SolidColorBrush x:Key="Text.Tertiary" Color="#FF657A70" />
+    <SolidColorBrush x:Key="Text.Disabled" Color="#FF41524A" />
 
-    <SolidColorBrush x:Key="Accent" Color="#FF3DDC97" />
-    <SolidColorBrush x:Key="Accent.Hover" Color="#FF5BE3A9" />
-    <SolidColorBrush x:Key="Accent.Pressed" Color="#FF2FC283" />
-    <SolidColorBrush x:Key="Accent.Soft" Color="#1F3DDC97" />
-    <SolidColorBrush x:Key="Text.OnAccent" Color="#FF052E1C" />
+    <SolidColorBrush x:Key="Accent" Color="#FF30D158" />
+    <SolidColorBrush x:Key="Accent.Hover" Color="#FF4AE070" />
+    <SolidColorBrush x:Key="Accent.Pressed" Color="#FF24B347" />
+    <SolidColorBrush x:Key="Accent.Soft" Color="#2430D158" />
+    <SolidColorBrush x:Key="Text.OnAccent" Color="#FF04240D" />
 
-    <SolidColorBrush x:Key="Success" Color="#FF4ADE80" />
-    <SolidColorBrush x:Key="Warning" Color="#FFFACC15" />
-    <SolidColorBrush x:Key="Danger" Color="#FFF87171" />
+    <SolidColorBrush x:Key="Switch.On" Color="#FF30D158" />
+    <SolidColorBrush x:Key="Switch.Off" Color="#FF2C3E36" />
+    <SolidColorBrush x:Key="Segment.Track" Color="#FF1D2A24" />
+    <SolidColorBrush x:Key="Segment.Thumb" Color="#FF2F443B" />
 
-    <SolidColorBrush x:Key="Priority.High" Color="#FFF87171" />
-    <SolidColorBrush x:Key="Priority.Medium" Color="#FFFACC15" />
-    <SolidColorBrush x:Key="Priority.Low" Color="#FF60A5FA" />
+    <SolidColorBrush x:Key="Success" Color="#FF30D158" />
+    <SolidColorBrush x:Key="Warning" Color="#FFFF9F0A" />
+    <SolidColorBrush x:Key="Danger" Color="#FFFF453A" />
 
-    <SolidColorBrush x:Key="Ring.Track" Color="#12EFFFF6" />
-    <SolidColorBrush x:Key="Ring.Tick" Color="#26EFFFF6" />
-    <SolidColorBrush x:Key="Chart.Grid" Color="#0FEFFFF6" />
+    <SolidColorBrush x:Key="Priority.High" Color="#FFFF453A" />
+    <SolidColorBrush x:Key="Priority.Medium" Color="#FFFF9F0A" />
+    <SolidColorBrush x:Key="Priority.Low" Color="#FF0A84FF" />
 
-    <SolidColorBrush x:Key="Heat.L0" Color="#0FEFFFF6" />
-    <SolidColorBrush x:Key="Heat.L1" Color="#473DDC97" />
-    <SolidColorBrush x:Key="Heat.L2" Color="#803DDC97" />
-    <SolidColorBrush x:Key="Heat.L3" Color="#BF3DDC97" />
-    <SolidColorBrush x:Key="Heat.L4" Color="#FF3DDC97" />
+    <SolidColorBrush x:Key="Ring.Track" Color="#18E8FFF2" />
+    <SolidColorBrush x:Key="Ring.Tick" Color="#2EE8FFF2" />
+    <SolidColorBrush x:Key="Chart.Grid" Color="#12E8FFF2" />
+
+    <SolidColorBrush x:Key="Heat.L0" Color="#12E8FFF2" />
+    <SolidColorBrush x:Key="Heat.L1" Color="#4030D158" />
+    <SolidColorBrush x:Key="Heat.L2" Color="#7830D158" />
+    <SolidColorBrush x:Key="Heat.L3" Color="#B830D158" />
+    <SolidColorBrush x:Key="Heat.L4" Color="#FF30D158" />
 
     <SolidColorBrush x:Key="Caption.CloseHover" Color="#FFC42B1C" />
-    <SolidColorBrush x:Key="DwmBorder" Color="#FF22332C" />
+    <SolidColorBrush x:Key="DwmBorder" Color="#FF22302A" />
 </ResourceDictionary>
