@@ -33,39 +33,39 @@
 
 ## ✨ 核心特性
 
-- **⏱️ 无漂移精准计时引擎**：支持标准番茄（专注 / 短休息 / 长休息）、正计时（Stopwatch）、Idle 点击大数字自定义时长（1–180 分钟）、`+5 分钟` 延长、4 番茄自动长休周期、跨午夜新一天起点（`DayStartHour`）与异常退出/重启恢复。
-- **🎨 随阶段流动的现代玻璃视觉**：内置 4 套精调主题（**深邃夜空 `midnight`**、**晨雾浅色 `mist`**、**暖阳日落 `sunset`**、**静谧森林 `forest`**），支持 300ms 交叉淡化无闪烁换肤；600ms 阶段色流动系统驱动自绘 60 刻度矢量渐变进度圆环、弧端发光点、背景径向光晕与完成 18 粒子迸发动效。
-- **✅ 高效任务管理闭环**：内置 `#标签 !高 ~3` 快速添加语法、进行中/已完成/全部筛选、多标签芯片过滤、200ms 防抖搜索、4 种排序、模态新建/编辑、删除 6 秒底部 Snackbar 撤销，以及一键绑定当前专注任务并自动累计完成番茄数。
-- **📊 专注统计与自绘矢量图表**：4 张 KPI 总览卡片、7/30 天柱状趋势图（含每日目标虚线）、24 小时平滑面积分布图（跨小时会话按比例拆分）、标签/任务分布环形图、近 46 周 GitHub 风格专注热力图、按日分组历史明细与 UTF-8 BOM CSV 一键导出。
-- **🎧 9 路纯代码 DSP 实时合成立体声环境音**：无需联网、无需外部音频文件，基于 `winmm` waveOut 纯代码实时合成 **细雨、海浪、林间鸟鸣、咖啡馆、篝火、微风、白噪音、棕噪音、时钟滴答** 9 路立体声音轨；支持多路混音、4 种预设场景、定时关闭 3 秒淡出、专注/暂停联动与 4 种合成提示音（风铃 / 颂钵 / 木鱼 / 电子，播放时环境音自动闪避 40%）。
-- **🖥️ 原生 Windows 桌面体验**：`288×92` 始终置顶磁吸迷你悬浮窗（支持贴边吸附与右键透明度调节）、GDI+ 动态进度托盘图标与主题化右键菜单、右下角应用内 Toast 完成卡片、全局热键录制，以及 500ms 防抖原子 JSON 本地存储（含 `.bak` 损坏自动恢复与全量备份导入导出）。
+- **⏱️ 无漂移精准计时引擎**：支持标准番茄（专注 / 短休息 / 长休息）、正计时（Stopwatch）、Idle 点击大数字自定义时长（1–180 分钟）、`+5 分钟` 延长、4 番茄自动长休周期、跨午夜新一天起点（`DayStartHour`）与异常退出/重启恢复；支持一键切换 **禅模式（`Ctrl+\`）** 隐藏右侧栏沉浸专注。
+- **🎨 Apple HIG 现代设计语言 + Win11 原生 Mica**：采用全高一体 macOS Source List 侧边栏、圆角内嵌画布与 Windows 11 原生 Mica 云母材质；内置 4 套精调主题（**深邃夜空 `midnight`**、**晨雾浅色 `mist`**、**暖阳日落 `sunset`**、**静谧森林 `forest`**）300ms 无闪烁换肤；系统交互色（Apple Blue / Green）与计时阶段色解耦，配合 600ms 阶段流光、60 刻度纤细渐变圆环、光学居中大数字与 18 粒子完成动效。
+- **✅ 高效任务管理闭环**：内置 `#标签 !高 ~3` 快速添加语法、Apple Reminders 风格按优先级着色圆框、右侧操作按钮悬停渐进显露（Progressive Disclosure）、状态与多标签过滤、防抖搜索、4 种排序、模态新建/编辑、删除 6 秒 Snackbar 撤销与专注任务绑定。
+- **📊 专注统计与交互式矢量图表**：4 张 KPI 总览卡（含同比趋势与完成率彩色徽章）、7/30 天柔和渐变柱状趋势图（悬停玻璃 Tooltip）、24 小时平滑面积分布图（悬停十字准线与数值胶囊）、Apple 6 色标签/任务环形分布图、近 20 周/全年可切换翡翠绿专注热力图、Inset Grouped 历史明细与 UTF-8 BOM CSV 导出。
+- **🎧 9 路纯代码 DSP 实时合成立体声环境音**：iOS 控制中心风格音轨磁贴（未开启滑块自动降噪），无需联网与音频素材，基于 `winmm` waveOut 实时合成 **细雨、海浪、林间鸟鸣、咖啡馆、篝火、微风、白噪音、棕噪音、时钟滴答**；支持多路混音、4 种预设场景、定时关闭 3 秒淡出、专注/暂停联动与 4 种合成提示音（播放时环境音自动闪避 40%）。
+- **🖥️ 原生 Windows 桌面体验**：`288×92` 灵动岛胶囊置顶磁吸迷你悬浮窗（内缩悬浮圆角进度条、贴边吸附与透明度调节）、GDI+ 动态进度托盘图标与主题化右键菜单、macOS 风格应用内 Toast 横幅、全局热键录制，以及 500ms 防抖原子 JSON 本地存储（含 `.bak` 损坏自动恢复与全量备份导入导出）。
 - **📦 纯 BCL 零外部依赖**：基于系统自带 `.NET Framework 4.8` + `MSBuild.exe` 纯离线编译，无需安装 Visual Studio、无需 .NET SDK、无需拉取任何 NuGet 包。
 
 ---
 
 ## 🖼️ 界面预览
 
-### 随阶段流动的色彩（专注珊瑚红 · 短休薄荷青 · 长休星云紫）
+### 禅模式沉浸专注 · 随阶段流动的色彩
 
-| 专注阶段（珊瑚红 `#FF6B5E`） | 短休息阶段（薄荷青 `#2DD4BF`） | 长休息阶段（星云紫 `#7C83FF`） |
+| 禅模式（`Ctrl+\` 折叠右侧栏） | 短休息阶段（薄荷青） | 长休息阶段（星云紫） |
 | :---: | :---: | :---: |
-| <img src="docs/screenshots/01_focus_midnight_running.png" alt="专注阶段" width="300" /> | <img src="docs/screenshots/02_focus_shortbreak.png" alt="短休息阶段" width="300" /> | <img src="docs/screenshots/03_focus_longbreak.png" alt="长休息阶段" width="300" /> |
+| <img src="docs/screenshots/11_focus_zen_mode.png" alt="禅模式沉浸专注" width="300" /> | <img src="docs/screenshots/02_focus_shortbreak.png" alt="短休息阶段" width="300" /> | <img src="docs/screenshots/03_focus_longbreak.png" alt="长休息阶段" width="300" /> |
 
-### 核心功能视图（任务 · 编辑弹窗 · 统计图表 · 环境音混音器）
+### 核心功能视图（Reminders 任务 · macOS Sheet · Health 统计 · 控制中心环境音）
 
-| 任务管理与快速语法 | 新建 / 编辑任务对话框 |
+| 任务管理与悬停渐进显露 | 新建 / 编辑任务对话框 |
 | :---: | :---: |
 | <img src="docs/screenshots/04_tasks_view.png" alt="任务管理视图" width="440" /> | <img src="docs/screenshots/05_task_edit_dialog.png" alt="任务编辑对话框" width="440" /> |
 
-| 专注统计与 4 类自绘矢量图表 | 9 路纯代码 DSP 环境音混音器 |
+| 专注统计与交互式矢量图表 | 9 路纯代码 DSP 环境音混音器 |
 | :---: | :---: |
 | <img src="docs/screenshots/06_stats_view.png" alt="专注统计视图" width="440" /> | <img src="docs/screenshots/07_ambient_audio_view.png" alt="环境音混音器" width="440" /> |
 
-### 4 套主题 · 860×600 紧凑响应式 · 置顶磁吸迷你悬浮窗
+### 4 套主题 · 860×600 紧凑响应式 · 灵动岛迷你悬浮窗
 
-| 晨雾浅色主题（`mist`）设置中心 | 暖阳日落（`sunset`）860×600 紧凑布局 | 静谧森林（`forest`）288×92 迷你悬浮窗 |
+| 苹果浅色主题（`mist`）设置中心 | 暖金暗夜（`sunset`）860×600 紧凑布局 | 翠林暗夜（`forest`）288×92 迷你悬浮窗 |
 | :---: | :---: | :---: |
-| <img src="docs/screenshots/08_settings_mist_light.png" alt="晨雾浅色主题设置" width="300" /> | <img src="docs/screenshots/09_focus_sunset_compact.png" alt="紧凑响应式布局" width="300" /> | <img src="docs/screenshots/10_mini_floating_window.png" alt="迷你悬浮窗" width="240" /> |
+| <img src="docs/screenshots/08_settings_mist_light.png" alt="苹果浅色主题设置" width="300" /> | <img src="docs/screenshots/09_focus_sunset_compact.png" alt="紧凑响应式布局" width="300" /> | <img src="docs/screenshots/10_mini_floating_window.png" alt="灵动岛迷你悬浮窗" width="240" /> |
 
 ---
 
@@ -73,7 +73,7 @@
 
 普通用户无需安装开发工具或手动编译，直接从 [GitHub Releases](https://github.com/cufe5/PomodoroFocus/releases/latest) 下载预编译绿色包即可开箱即用：
 
-1. 前往 **[最新 Release 页面](https://github.com/cufe5/PomodoroFocus/releases/latest)**（或查看[全部历史版本](https://github.com/cufe5/PomodoroFocus/releases)），在页面底部的 **Assets** 中下载 **`PomodoroFocus-v*-win-x64.zip`**（约 194 KB）。
+1. 前往 **[最新 Release 页面](https://github.com/cufe5/PomodoroFocus/releases/latest)**（或查看[全部历史版本](https://github.com/cufe5/PomodoroFocus/releases)），在页面底部的 **Assets** 中下载 **`PomodoroFocus-v*-win-x64.zip`**（约 200 KB）。
 2. 将压缩包解压到任意文件夹，确保以下文件位于同一目录：
    - `PomodoroFocus.exe`（主程序）
    - `PomodoroFocus.Core.dll`（核心引擎与音频合成库）
