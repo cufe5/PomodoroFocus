@@ -6,11 +6,22 @@
 
 深色玻璃质感 · 随阶段流动的色彩 · 9 路纯代码 DSP 离线环境音 · 自绘矢量统计图表 · 纯 BCL 零外部依赖
 
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11%20x64-0078D6?style=flat-square&logo=windows)](https://github.com)
+[![Release](https://img.shields.io/github/v/release/cufe5/PomodoroFocus?style=flat-square&label=Release&color=FF6B5E)](https://github.com/cufe5/PomodoroFocus/releases/latest)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11%20x64-0078D6?style=flat-square&logo=windows)](https://github.com/cufe5/PomodoroFocus/releases/latest)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8%20WPF-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
-[![Dependencies](https://img.shields.io/badge/Dependencies-Zero%20NuGet-2DD4BF?style=flat-square)](#环境要求与构建)
-[![Offline](https://img.shields.io/badge/Mode-100%25%20Offline-FF6B5E?style=flat-square)](#核心特性)
+[![Dependencies](https://img.shields.io/badge/Dependencies-Zero%20NuGet-2DD4BF?style=flat-square)](#-从源码构建与测试)
+[![Offline](https://img.shields.io/badge/Mode-100%25%20Offline-34D399?style=flat-square)](#-核心特性)
 [![License](https://img.shields.io/badge/License-MIT-7C83FF?style=flat-square)](LICENSE)
+
+<p>
+  <a href="https://github.com/cufe5/PomodoroFocus/releases/latest"><strong>📥 下载最新绿色版 (GitHub Releases)</strong></a>
+  &nbsp;·&nbsp;
+  <a href="#-核心特性">核心特性</a>
+  &nbsp;·&nbsp;
+  <a href="#-界面预览">界面预览</a>
+  &nbsp;·&nbsp;
+  <a href="#-从源码构建与测试">源码构建</a>
+</p>
 
 <br />
 
@@ -58,7 +69,28 @@
 
 ---
 
-## 🚀 环境要求与构建
+## 📥 下载与使用（绿色免安装，推荐）
+
+普通用户无需安装开发工具或手动编译，直接从 [GitHub Releases](https://github.com/cufe5/PomodoroFocus/releases/latest) 下载预编译绿色包即可开箱即用：
+
+1. 前往 **[最新 Release 页面](https://github.com/cufe5/PomodoroFocus/releases/latest)**（或查看[全部历史版本](https://github.com/cufe5/PomodoroFocus/releases)），在页面底部的 **Assets** 中下载 **`PomodoroFocus-v*-win-x64.zip`**（约 194 KB）。
+2. 将压缩包解压到任意文件夹，确保以下文件位于同一目录：
+   - `PomodoroFocus.exe`（主程序）
+   - `PomodoroFocus.Core.dll`（核心引擎与音频合成库）
+   - `PomodoroFocus.exe.config`（`.NET Framework 4.8` 运行时配置）
+3. 双击 **`PomodoroFocus.exe`** 即可运行。
+
+> **运行说明**：
+> - 支持 **Windows 10（1903 及以上）/ Windows 11 (x64)**，系统内置 `.NET Framework 4.8`，无需安装任何额外运行库。
+> - 应用 100% 纯本地离线运行，配置与专注历史自动保存于 `%LocalAppData%\PomodoroFocus\`。
+> - 如需先用内置演示数据体验完整统计图表与任务流（不污染个人数据），可在解压目录打开 PowerShell 运行：
+>   ```powershell
+>   .\PomodoroFocus.exe --seed-demo --data-dir "$env:TEMP\PomodoroFocusDemo"
+>   ```
+
+---
+
+## 🚀 从源码构建与测试
 
 ### 环境要求
 
