@@ -38,12 +38,12 @@ namespace PomodoroFocus.App.ViewModels
             AutomationId = "SoundCard_" + id;
             TintColor = (Color)ColorConverter.ConvertFromString(tintHex);
             TintBrush = new SolidColorBrush(TintColor);
-            TintSoftBrush = new SolidColorBrush(Color.FromArgb(0x38, TintColor.R, TintColor.G, TintColor.B));
-            TintBorderBrush = new SolidColorBrush(Color.FromArgb(0xB3, TintColor.R, TintColor.G, TintColor.B));
+            TintSoftBrush = new SolidColorBrush(Color.FromArgb(0x2E, TintColor.R, TintColor.G, TintColor.B));
+            TintBorderBrush = new SolidColorBrush(Color.FromArgb(0x55, TintColor.R, TintColor.G, TintColor.B));
 
             var grad = new LinearGradientBrush { StartPoint = new System.Windows.Point(0, 0), EndPoint = new System.Windows.Point(1, 1) };
-            grad.GradientStops.Add(new GradientStop(Color.FromArgb(0x28, TintColor.R, TintColor.G, TintColor.B), 0.0));
-            grad.GradientStops.Add(new GradientStop(Color.FromArgb(0x0D, TintColor.R, TintColor.G, TintColor.B), 1.0));
+            grad.GradientStops.Add(new GradientStop(Color.FromArgb(0x1E, TintColor.R, TintColor.G, TintColor.B), 0.0));
+            grad.GradientStops.Add(new GradientStop(Color.FromArgb(0x0A, TintColor.R, TintColor.G, TintColor.B), 1.0));
             ActiveBgBrush = grad;
         }
 
@@ -162,15 +162,15 @@ namespace PomodoroFocus.App.ViewModels
 
             var defs = new string[][]
             {
-                new string[] { "rain", "细雨", "Geo.rain", "#60A5FA" },
-                new string[] { "ocean", "海浪", "Geo.waves", "#22D3EE" },
-                new string[] { "forest", "林间鸟鸣", "Geo.tree", "#4ADE80" },
-                new string[] { "cafe", "咖啡馆", "Geo.coffee", "#D4A373" },
-                new string[] { "fire", "篝火", "Geo.flame", "#FB923C" },
-                new string[] { "wind", "微风", "Geo.wind", "#A5B4FC" },
-                new string[] { "white", "白噪音", "Geo.wave", "#94A3B8" },
-                new string[] { "brown", "棕噪音", "Geo.moon", "#C08457" },
-                new string[] { "clock", "时钟滴答", "Geo.clock", "#F472B6" }
+                new string[] { "rain", "细雨", "Geo.rain", "#0A84FF" },
+                new string[] { "ocean", "海浪", "Geo.waves", "#32ADE6" },
+                new string[] { "forest", "林间鸟鸣", "Geo.tree", "#30D158" },
+                new string[] { "cafe", "咖啡馆", "Geo.coffee", "#AC8E68" },
+                new string[] { "fire", "篝火", "Geo.flame", "#FF9F0A" },
+                new string[] { "wind", "微风", "Geo.wind", "#5E5CE6" },
+                new string[] { "white", "白噪音", "Geo.wave", "#8E8E93" },
+                new string[] { "brown", "棕噪音", "Geo.moon", "#BF5AF2" },
+                new string[] { "clock", "时钟滴答", "Geo.clock", "#FF375F" }
             };
             for (int i = 0; i < defs.Length; i++)
             {

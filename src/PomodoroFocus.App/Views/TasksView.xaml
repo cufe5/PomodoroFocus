@@ -77,13 +77,13 @@
             </StackPanel>
         </Grid>
 
-        <!-- 2. Quick Add Bar -->
+        <!-- 2. Quick Add Bar (Apple Reminders style) -->
         <StackPanel Grid.Row="1" Margin="0,0,0,14">
             <Border CornerRadius="12"
-                    Background="{DynamicResource Surface.2}"
+                    Background="{DynamicResource Surface.1}"
                     BorderBrush="{DynamicResource Stroke.Subtle}"
                     BorderThickness="1"
-                    Height="48"
+                    Height="46"
                     Padding="14,0,8,0">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -105,13 +105,13 @@
                              BorderThickness="0"
                              Foreground="{DynamicResource Text.Primary}"
                              CaretBrush="{DynamicResource Accent}"
-                             FontSize="14"
+                             FontSize="13.5"
                              VerticalContentAlignment="Center"
                              KeyDown="OnQuickAddKeyDown"
                              GotKeyboardFocus="OnQuickAddFocusChanged"
                              LostKeyboardFocus="OnQuickAddFocusChanged"
                              Style="{StaticResource AppTextBox}"
-                             Height="44"
+                             Height="42"
                              Padding="0"
                              themes:ControlProps.Placeholder="添加任务，回车保存（#标签 !高 ~3 预估）" />
                     <Button Grid.Column="2"
@@ -119,7 +119,7 @@
                             Content="添加"
                             Command="{Binding QuickAddCommand}"
                             Style="{StaticResource Button.Primary}"
-                            Height="34"
+                            Height="32"
                             MinWidth="68"
                             themes:ControlProps.CornerRadius="8" />
                 </Grid>
@@ -208,57 +208,58 @@
                     <DataTemplate>
                         <Border x:Name="RowCard"
                                 CornerRadius="12"
-                                Background="{DynamicResource Surface.1}"
-                                BorderBrush="{DynamicResource Stroke.Subtle}"
                                 BorderThickness="1"
-                                Padding="12,11"
+                                Padding="14,11"
                                 Margin="0,0,0,8">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="{DynamicResource Surface.1}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource Stroke.Subtle}" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource Surface.2}" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource Stroke.Strong}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Priority Color Bar (4x28) -->
-                                <Border Grid.Column="0" Width="4" Height="28" CornerRadius="2" Margin="0,0,12,0" VerticalAlignment="Center">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Setter Property="Background" Value="Transparent" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Priority}" Value="3">
-                                                    <Setter Property="Background" Value="{DynamicResource Priority.High}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Priority}" Value="2">
-                                                    <Setter Property="Background" Value="{DynamicResource Priority.Medium}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Priority}" Value="1">
-                                                    <Setter Property="Background" Value="{DynamicResource Priority.Low}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                </Border>
-
-                                <!-- Circular Complete Checkbox -->
-                                <Button Grid.Column="1"
+                                <!-- Circular Complete Checkbox (Apple Reminders priority-tinted ring + 10% subtle fill) -->
+                                <Button Grid.Column="0"
                                         Command="{Binding DataContext.ToggleTaskCompleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding Id}"
-                                        Width="22"
-                                        Height="22"
+                                        Width="20"
+                                        Height="20"
                                         Margin="0,0,12,0"
                                         Cursor="Hand"
                                         ToolTip="标记完成 / 取消完成">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
-                                            <Border CornerRadius="999" BorderThickness="1.5">
+                                            <Border CornerRadius="999" BorderThickness="1.75">
                                                 <Border.Style>
                                                     <Style TargetType="Border">
                                                         <Setter Property="Background" Value="Transparent" />
                                                         <Setter Property="BorderBrush" Value="{DynamicResource Stroke.Strong}" />
                                                         <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Priority}" Value="3">
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource Priority.High}" />
+                                                                <Setter Property="Background" Value="#1AFF453A" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Priority}" Value="2">
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource Priority.Medium}" />
+                                                                <Setter Property="Background" Value="#1AFF9F0A" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Priority}" Value="1">
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource Priority.Low}" />
+                                                                <Setter Property="Background" Value="#1A0A84FF" />
+                                                            </DataTrigger>
                                                             <DataTrigger Binding="{Binding IsCompleted}" Value="True">
                                                                 <Setter Property="Background" Value="{DynamicResource Success}" />
                                                                 <Setter Property="BorderBrush" Value="{DynamicResource Success}" />
@@ -268,7 +269,7 @@
                                                 </Border.Style>
                                                 <TextBlock Text="{StaticResource Icon.Check}"
                                                            Style="{StaticResource IconGlyph}"
-                                                           FontSize="11"
+                                                           FontSize="10.5"
                                                            Foreground="#FFFFFFFF"
                                                            Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVis}}" />
                                             </Border>
@@ -277,7 +278,7 @@
                                 </Button>
 
                                 <!-- Title, Active Badge, Tags, Notes -->
-                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,12,0">
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,12,0">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
@@ -340,7 +341,7 @@
                                 </StackPanel>
 
                                 <!-- Tomato Progress Dots / Count -->
-                                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0" Visibility="{Binding HasProgress, Converter={StaticResource BoolToVis}}">
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0" Visibility="{Binding HasProgress, Converter={StaticResource BoolToVis}}">
                                     <ItemsControl ItemsSource="{Binding TomatoDots}" Visibility="{Binding ShowDotRow, Converter={StaticResource BoolToVis}}" Margin="0,0,6,0" VerticalAlignment="Center">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
@@ -375,8 +376,18 @@
                                                VerticalAlignment="Center" />
                                 </StackPanel>
 
-                                <!-- Action Buttons -->
-                                <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
+                                <!-- Action Buttons (Progressive Disclosure: 0.16 at rest, 1.0 on row hover) -->
+                                <StackPanel x:Name="RowActionsPanel" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Opacity" Value="0.16" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=RowCard}" Value="True">
+                                                    <Setter Property="Opacity" Value="1.0" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
                                     <Button Command="{Binding DataContext.StartFocusTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding Id}"
                                             Style="{StaticResource Button.CircleIcon}"
@@ -394,8 +405,7 @@
                                             Height="30"
                                             MinWidth="30"
                                             Padding="0"
-                                            ToolTip="编辑任务"
-                                            Opacity="0.65">
+                                            ToolTip="编辑任务">
                                         <TextBlock Text="{StaticResource Icon.Edit}" Style="{StaticResource IconGlyph}" FontSize="13" />
                                     </Button>
                                     <Button Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -405,8 +415,7 @@
                                             Height="30"
                                             MinWidth="30"
                                             Padding="0"
-                                            ToolTip="删除任务"
-                                            Opacity="0.65">
+                                            ToolTip="删除任务">
                                         <TextBlock Text="{StaticResource Icon.Delete}" Style="{StaticResource IconGlyph}" FontSize="13" />
                                     </Button>
                                 </StackPanel>

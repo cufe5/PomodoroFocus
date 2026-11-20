@@ -32,6 +32,7 @@ namespace PomodoroFocus.App.ViewModels
 
         private string _activeViewKey = "focus";
         private bool _isCompactLayout;
+        private bool _isZenMode;
         private bool _isAlwaysOnTop;
         private bool _isMiniWindowOpen;
 
@@ -191,6 +192,7 @@ namespace PomodoroFocus.App.ViewModels
             SettingsVM = new SettingsViewModel(this);
 
             NavigateCommand = new RelayCommand<string>(NavigateTo);
+            ToggleZenModeCommand = new RelayCommand(delegate { IsZenMode = !IsZenMode; });
             ToggleAlwaysOnTopCommand = new RelayCommand(delegate { IsAlwaysOnTop = !IsAlwaysOnTop; });
             ToggleMiniModeCommand = new RelayCommand(ToggleMiniWindow);
             DismissInfoBarCommand = new RelayCommand(delegate { HasInfoBar = false; });
@@ -245,6 +247,7 @@ namespace PomodoroFocus.App.ViewModels
         }
 
         public ICommand NavigateCommand { get; private set; }
+        public ICommand ToggleZenModeCommand { get; private set; }
         public ICommand ToggleAlwaysOnTopCommand { get; private set; }
         public ICommand ToggleMiniModeCommand { get; private set; }
         public ICommand DismissInfoBarCommand { get; private set; }
@@ -268,6 +271,7 @@ namespace PomodoroFocus.App.ViewModels
                     RaisePropertyChanged("IsStatsView");
                     RaisePropertyChanged("IsAudioView");
                     RaisePropertyChanged("IsSettingsView");
+                    RaisePropertyChanged("ShowZenToggleButton");
                     UpdateTitleBarPill();
                     Settings.LastActiveView = value;
                     SaveSettingsDebounced();
@@ -292,11 +296,26 @@ namespace PomodoroFocus.App.ViewModels
                 {
                     RaisePropertyChanged("SidebarWidth");
                     RaisePropertyChanged("PageHorizontalPadding");
+                    RaisePropertyChanged("ShowZenToggleButton");
                 }
             }
         }
 
-        public double SidebarWidth { get { return _isCompactLayout ? 68.0 : 200.0; } }
+        public bool IsZenMode
+        {
+            get { return _isZenMode; }
+            set
+            {
+                if (SetField(ref _isZenMode, value, "IsZenMode"))
+                {
+                    RaisePropertyChanged("ShowZenToggleButton");
+                }
+            }
+        }
+
+        public bool ShowZenToggleButton { get { return IsFocusView && !_isCompactLayout; } }
+
+        public double SidebarWidth { get { return _isCompactLayout ? 68.0 : 204.0; } }
         public Thickness PageHorizontalPadding { get { return _isCompactLayout ? new Thickness(24, 20, 24, 20) : new Thickness(32, 24, 32, 24); } }
 
         public bool IsAlwaysOnTop

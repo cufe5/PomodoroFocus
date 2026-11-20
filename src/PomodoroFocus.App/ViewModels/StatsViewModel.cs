@@ -39,21 +39,27 @@ namespace PomodoroFocus.App.ViewModels
         private readonly List<SegmentOption> _trendRangeOptions;
         private readonly List<SegmentOption> _distributionModeOptions;
         private readonly List<SegmentOption> _historyFilterOptions;
+        private readonly List<SegmentOption> _heatmapRangeOptions;
 
         private string _trendRangeKey = "7";
         private string _distributionModeKey = "tag";
         private string _historyFilterKey = "all";
-        private int _heatmapWeeks = 26;
+        private string _heatmapRangeKey = "20";
+        private int _heatmapWeeks = 20;
         private int _historyLimit = 50;
 
         private string _todayPomodorosBig = "0 个番茄";
         private string _todayDurationSub = "0 分钟";
         private string _weekHoursBig = "0.0";
         private string _weekDeltaSub = "较上周持平";
+        private string _weekDeltaBadgeText = "\u2197 持平";
+        private bool _isWeekDeltaPositive = true;
         private string _streakDaysBig = "0 天";
         private string _longestStreakSub = "最长 0 天";
         private string _totalHoursBig = "0.0";
         private string _completionRateSub = "完成率 0% · 0 个番茄";
+        private string _completionRateBadgeText = "完成率 0%";
+        private string _totalPomodorosSubText = "0 个番茄";
 
         private IList<TrendDayPoint> _trendPoints;
         private int _goalMinutes = 200;
@@ -61,7 +67,7 @@ namespace PomodoroFocus.App.ViewModels
         private string _hourlyPeakSubtitle = "暂无高效时段";
         private IList<DistributionSlice> _distributionSlices;
         private IList<HeatmapCell> _heatmapCells;
-        private string _heatmapTitle = "专注热力图（近 26 周）";
+        private string _heatmapTitle = "专注热力图（近 20 周）";
 
         private bool _hasAnyData;
         private bool _hasMoreHistory;
@@ -85,6 +91,11 @@ namespace PomodoroFocus.App.ViewModels
                 new SegmentOption { Key = "focus", Label = "专注" },
                 new SegmentOption { Key = "break", Label = "休息" }
             };
+            _heatmapRangeOptions = new List<SegmentOption>
+            {
+                new SegmentOption { Key = "20", Label = "近 20 周" },
+                new SegmentOption { Key = "52", Label = "全年" }
+            };
 
             HistoryGroups = new ObservableCollection<HistoryDayGroupViewModel>();
             ExportCsvCommand = new RelayCommand(delegate { _main.ExportCsvInteractive(); });
@@ -100,6 +111,7 @@ namespace PomodoroFocus.App.ViewModels
         public IList<SegmentOption> TrendRangeOptions { get { return _trendRangeOptions; } }
         public IList<SegmentOption> DistributionModeOptions { get { return _distributionModeOptions; } }
         public IList<SegmentOption> HistoryFilterOptions { get { return _historyFilterOptions; } }
+        public IList<SegmentOption> HeatmapRangeOptions { get { return _heatmapRangeOptions; } }
         public ObservableCollection<HistoryDayGroupViewModel> HistoryGroups { get; private set; }
 
         public ICommand ExportCsvCommand { get; private set; }
@@ -143,14 +155,33 @@ namespace PomodoroFocus.App.ViewModels
             }
         }
 
+        public string HeatmapRangeKey
+        {
+            get { return _heatmapRangeKey; }
+            set
+            {
+                if (SetField(ref _heatmapRangeKey, value, "HeatmapRangeKey"))
+                {
+                    int weeks = (value == "52") ? 52 : 20;
+                    SetHeatmapWeeks(weeks);
+                }
+            }
+        }
+
+        public int HeatmapWeeksCount { get { return _heatmapWeeks; } }
+
         public string TodayPomodorosBig { get { return _todayPomodorosBig; } private set { SetField(ref _todayPomodorosBig, value, "TodayPomodorosBig"); } }
         public string TodayDurationSub { get { return _todayDurationSub; } private set { SetField(ref _todayDurationSub, value, "TodayDurationSub"); } }
         public string WeekHoursBig { get { return _weekHoursBig; } private set { SetField(ref _weekHoursBig, value, "WeekHoursBig"); } }
         public string WeekDeltaSub { get { return _weekDeltaSub; } private set { SetField(ref _weekDeltaSub, value, "WeekDeltaSub"); } }
+        public string WeekDeltaBadgeText { get { return _weekDeltaBadgeText; } private set { SetField(ref _weekDeltaBadgeText, value, "WeekDeltaBadgeText"); } }
+        public bool IsWeekDeltaPositive { get { return _isWeekDeltaPositive; } private set { SetField(ref _isWeekDeltaPositive, value, "IsWeekDeltaPositive"); } }
         public string StreakDaysBig { get { return _streakDaysBig; } private set { SetField(ref _streakDaysBig, value, "StreakDaysBig"); } }
         public string LongestStreakSub { get { return _longestStreakSub; } private set { SetField(ref _longestStreakSub, value, "LongestStreakSub"); } }
         public string TotalHoursBig { get { return _totalHoursBig; } private set { SetField(ref _totalHoursBig, value, "TotalHoursBig"); } }
         public string CompletionRateSub { get { return _completionRateSub; } private set { SetField(ref _completionRateSub, value, "CompletionRateSub"); } }
+        public string CompletionRateBadgeText { get { return _completionRateBadgeText; } private set { SetField(ref _completionRateBadgeText, value, "CompletionRateBadgeText"); } }
+        public string TotalPomodorosSubText { get { return _totalPomodorosSubText; } private set { SetField(ref _totalPomodorosSubText, value, "TotalPomodorosSubText"); } }
 
         public IList<TrendDayPoint> TrendPoints { get { return _trendPoints; } private set { SetField(ref _trendPoints, value, "TrendPoints"); } }
         public int GoalMinutes { get { return _goalMinutes; } private set { SetField(ref _goalMinutes, value, "GoalMinutes"); } }
@@ -170,8 +201,21 @@ namespace PomodoroFocus.App.ViewModels
             if (weeks != _heatmapWeeks)
             {
                 _heatmapWeeks = weeks;
-                HeatmapTitle = string.Format(CultureInfo.InvariantCulture, "专注热力图（近 {0} 周）", _heatmapWeeks);
+                RaisePropertyChanged("HeatmapWeeksCount");
+                UpdateHeatmapTitle();
                 HeatmapCells = StatsService.ComputeHeatmap(_main.Sessions, _main.Settings, DateTime.Now, TimeZoneInfo.Local, _heatmapWeeks);
+            }
+        }
+
+        private void UpdateHeatmapTitle()
+        {
+            if (_heatmapWeeks >= 52)
+            {
+                HeatmapTitle = "专注热力图（全年 52 周）";
+            }
+            else
+            {
+                HeatmapTitle = string.Format(CultureInfo.InvariantCulture, "专注热力图（近 {0} 周）", _heatmapWeeks);
             }
         }
 
@@ -187,11 +231,37 @@ namespace PomodoroFocus.App.ViewModels
 
             WeekHoursBig = Formatters.FormatHoursKpiValue(kpi.WeekFocusSeconds);
             WeekDeltaSub = Formatters.FormatPercentDelta(kpi.WeekFocusSeconds, kpi.PrevWeekSamePeriodSeconds);
+            if (kpi.PrevWeekSamePeriodSeconds <= 0)
+            {
+                WeekDeltaBadgeText = kpi.WeekFocusSeconds > 0 ? "\u2197 +100%" : "\u2197 持平";
+                IsWeekDeltaPositive = true;
+            }
+            else
+            {
+                int deltaPct = (int)Math.Round(((double)(kpi.WeekFocusSeconds - kpi.PrevWeekSamePeriodSeconds) / kpi.PrevWeekSamePeriodSeconds) * 100.0);
+                if (deltaPct > 0)
+                {
+                    WeekDeltaBadgeText = string.Format(CultureInfo.InvariantCulture, "\u2197 +{0}%", deltaPct);
+                    IsWeekDeltaPositive = true;
+                }
+                else if (deltaPct < 0)
+                {
+                    WeekDeltaBadgeText = string.Format(CultureInfo.InvariantCulture, "\u2198 {0}%", deltaPct);
+                    IsWeekDeltaPositive = false;
+                }
+                else
+                {
+                    WeekDeltaBadgeText = "\u2197 持平";
+                    IsWeekDeltaPositive = true;
+                }
+            }
 
             StreakDaysBig = string.Format(CultureInfo.InvariantCulture, "{0} 天", kpi.CurrentStreakDays);
             LongestStreakSub = string.Format(CultureInfo.InvariantCulture, "最长 {0} 天", kpi.LongestStreakDays);
 
             TotalHoursBig = Formatters.FormatHoursKpiValue(kpi.TotalFocusSeconds);
+            CompletionRateBadgeText = string.Format(CultureInfo.InvariantCulture, "完成率 {0}%", kpi.CompletionRatePercent);
+            TotalPomodorosSubText = string.Format(CultureInfo.InvariantCulture, "{0} 个番茄", kpi.TotalCompletedFocusCount);
             CompletionRateSub = string.Format(
                 CultureInfo.InvariantCulture,
                 "完成率 {0}% · {1} 个番茄",
@@ -201,7 +271,7 @@ namespace PomodoroFocus.App.ViewModels
             GoalMinutes = settings.DailyGoal * settings.FocusMinutes;
             RefreshCharts();
             RefreshDistribution();
-            HeatmapTitle = string.Format(CultureInfo.InvariantCulture, "专注热力图（近 {0} 周）", _heatmapWeeks);
+            UpdateHeatmapTitle();
             HeatmapCells = StatsService.ComputeHeatmap(sessions, settings, DateTime.Now, TimeZoneInfo.Local, _heatmapWeeks);
             RefreshHistory();
         }

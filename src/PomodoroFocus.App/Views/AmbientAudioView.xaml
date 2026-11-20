@@ -204,7 +204,7 @@
                                         <DataTrigger Binding="{Binding IsActive}" Value="True">
                                             <Setter Property="Background" Value="{Binding ActiveBgBrush}" />
                                             <Setter Property="BorderBrush" Value="{Binding TintBorderBrush}" />
-                                            <Setter Property="BorderThickness" Value="1.5" />
+                                            <Setter Property="BorderThickness" Value="1" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -240,14 +240,14 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
-                                        <!-- Circular Lucide Icon -->
+                                        <!-- Circular Lucide Icon (iOS Control Center solid tinted disc when active) -->
                                         <Border Grid.Column="0" Width="40" Height="40" CornerRadius="999" Margin="0,0,12,0" VerticalAlignment="Center">
                                             <Border.Style>
                                                 <Style TargetType="Border">
                                                     <Setter Property="Background" Value="{DynamicResource Surface.2}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                                            <Setter Property="Background" Value="{Binding TintSoftBrush}" />
+                                                            <Setter Property="Background" Value="{Binding TintBrush}" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -267,7 +267,7 @@
                                                         <Setter Property="Stroke" Value="{DynamicResource Text.Secondary}" />
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                                                <Setter Property="Stroke" Value="{Binding TintBrush}" />
+                                                                <Setter Property="Stroke" Value="#FFFFFFFF" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -306,18 +306,19 @@
                                     </Grid>
                                 </Button>
 
-                                <!-- Bottom Volume Slider -->
+                                <!-- Bottom Volume Slider (muted gray rail when inactive, vivid tint when active) -->
                                 <Slider Grid.Row="1"
                                         Value="{Binding Volume, Mode=TwoWay}"
                                         Minimum="0"
                                         Maximum="100"
-                                        Foreground="{Binding TintBrush}"
                                         Margin="0,10,0,0">
                                     <Slider.Style>
                                         <Style TargetType="Slider" BasedOn="{StaticResource AppSlider}">
-                                            <Setter Property="Opacity" Value="0.45" />
+                                            <Setter Property="Foreground" Value="{DynamicResource Switch.Off}" />
+                                            <Setter Property="Opacity" Value="0.28" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                    <Setter Property="Foreground" Value="{Binding TintBrush}" />
                                                     <Setter Property="Opacity" Value="1.0" />
                                                 </DataTrigger>
                                             </Style.Triggers>

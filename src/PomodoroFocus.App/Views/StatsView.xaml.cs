@@ -57,13 +57,5 @@ namespace PomodoroFocus.App.Views
                 DonutCard.Margin = new Thickness(0);
             }
         }
-
-        private void OnHeatmapWeeksChanged(object sender, int weeks)
-        {
-            if (_vm != null)
-            {
-                _vm.SetHeatmapWeeks(weeks);
-            }
-        }
     }
 }

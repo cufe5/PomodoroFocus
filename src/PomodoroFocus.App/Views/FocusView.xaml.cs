@@ -38,7 +38,7 @@ namespace PomodoroFocus.App.Views
 
         private void OnMainPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "IsCompactLayout")
+            if (e.PropertyName == "IsCompactLayout" || e.PropertyName == "IsZenMode")
             {
                 ApplyResponsiveLayout();
             }
@@ -52,6 +52,7 @@ namespace PomodoroFocus.App.Views
         private void ApplyResponsiveLayout()
         {
             bool compact = _vm != null && _vm.Main != null && _vm.Main.IsCompactLayout;
+            bool zen = _vm != null && _vm.Main != null && _vm.Main.IsZenMode;
             double availH = ActualHeight;
             bool tightVertical = compact || (availH > 0 && availH < 580);
 
@@ -64,9 +65,16 @@ namespace PomodoroFocus.App.Views
                 CompactBottomCards.Margin = new Thickness(0, 8, 0, 0);
                 CenterStageGrid.Margin = new Thickness(0);
             }
+            else if (zen)
+            {
+                RightRailCol.Width = new GridLength(0);
+                RightRailPanel.Visibility = Visibility.Collapsed;
+                CompactBottomCards.Visibility = Visibility.Collapsed;
+                CenterStageGrid.Margin = new Thickness(0);
+            }
             else
             {
-                RightRailCol.Width = new GridLength(300);
+                RightRailCol.Width = new GridLength(288);
                 RightRailPanel.Visibility = Visibility.Visible;
                 CompactBottomCards.Visibility = Visibility.Collapsed;
                 CenterStageGrid.Margin = new Thickness(0, 0, 16, 0);
@@ -92,8 +100,8 @@ namespace PomodoroFocus.App.Views
                 RingInnerStack.LayoutTransform = Transform.Identity;
                 ModeSegmentControl.Margin = new Thickness(0, 0, 0, 18);
                 ControlBarPanel.Margin = new Thickness(0, 18, 0, 0);
-                PrimaryTimerButton.Width = 76;
-                PrimaryTimerButton.Height = 76;
+                PrimaryTimerButton.Width = 72;
+                PrimaryTimerButton.Height = 72;
                 TaskSelectorRow.Margin = new Thickness(0, 18, 0, 0);
                 TaskSelectorPill.Height = 40;
                 TaskSelectorPill.CornerRadius = new CornerRadius(20);

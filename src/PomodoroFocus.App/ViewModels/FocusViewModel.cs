@@ -32,7 +32,9 @@ namespace PomodoroFocus.App.ViewModels
 
         private string _selectedModeKey = "focus";
         private string _timerText = "25:00";
-        private double _timerFontSize = 76.0;
+        private string _timerLeadText = "25";
+        private string _timerTrailText = "00";
+        private double _timerFontSize = 80.0;
         private string _phaseBadgeText = "准备专注";
         private string _subtitleText = "点击数字可调整本次时长";
         private double _progress;
@@ -129,6 +131,18 @@ namespace PomodoroFocus.App.ViewModels
         {
             get { return _timerText; }
             private set { SetField(ref _timerText, value, "TimerText"); }
+        }
+
+        public string TimerLeadText
+        {
+            get { return _timerLeadText; }
+            private set { SetField(ref _timerLeadText, value, "TimerLeadText"); }
+        }
+
+        public string TimerTrailText
+        {
+            get { return _timerTrailText; }
+            private set { SetField(ref _timerTrailText, value, "TimerTrailText"); }
         }
 
         public double TimerFontSize
@@ -332,8 +346,20 @@ namespace PomodoroFocus.App.ViewModels
             if (snap == null) return;
 
             int displaySec = snap.DisplaySeconds;
-            TimerText = Formatters.FormatTimer(displaySec);
-            TimerFontSize = displaySec >= 3600 ? 60.0 : 76.0;
+            string formatted = Formatters.FormatTimer(displaySec);
+            TimerText = formatted;
+            int lastColon = formatted.LastIndexOf(':');
+            if (lastColon >= 0)
+            {
+                TimerLeadText = formatted.Substring(0, lastColon);
+                TimerTrailText = formatted.Substring(lastColon + 1);
+            }
+            else
+            {
+                TimerLeadText = formatted;
+                TimerTrailText = string.Empty;
+            }
+            TimerFontSize = displaySec >= 3600 ? 62.0 : 80.0;
             Progress = snap.Progress;
             IsRunning = snap.State == TimerRunState.Running;
             IsPaused = snap.State == TimerRunState.Paused;

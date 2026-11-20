@@ -15,8 +15,12 @@ namespace PomodoroFocus.App.ViewModels
         public string DisplayName { get; set; }
         public string AutomationId { get; set; }
         public string BgHex { get; set; }
+        public string SidebarHex { get; set; }
+        public string CanvasHex { get; set; }
         public string CardHex { get; set; }
+        public string RingHex { get; set; }
         public string AccentHex { get; set; }
+        public string GlowHex { get; set; }
         public string TextHex { get; set; }
 
         public bool IsSelected
@@ -86,10 +90,10 @@ namespace PomodoroFocus.App.ViewModels
 
             ThemeCards = new List<ThemeCardItem>
             {
-                new ThemeCardItem { Key = "midnight", DisplayName = "深邃夜空", AutomationId = "ThemeCard_midnight", BgHex = "#0B0E14", CardHex = "#1A2030", AccentHex = "#FF6B5E", TextHex = "#F2F4F8" },
-                new ThemeCardItem { Key = "mist", DisplayName = "晨雾浅色", AutomationId = "ThemeCard_mist", BgHex = "#F3F5F9", CardHex = "#FFFFFF", AccentHex = "#E5484D", TextHex = "#0F172A" },
-                new ThemeCardItem { Key = "sunset", DisplayName = "暖阳日落", AutomationId = "ThemeCard_sunset", BgHex = "#170F12", CardHex = "#2A1D22", AccentHex = "#FF8A4C", TextHex = "#FFF4EC" },
-                new ThemeCardItem { Key = "forest", DisplayName = "静谧森林", AutomationId = "ThemeCard_forest", BgHex = "#09120F", CardHex = "#152520", AccentHex = "#3DDC97", TextHex = "#EAF5EF" }
+                new ThemeCardItem { Key = "midnight", DisplayName = "深邃夜空", AutomationId = "ThemeCard_midnight", BgHex = "#0B0B0E", SidebarHex = "#141418", CanvasHex = "#0B0B0E", CardHex = "#1C1C20", RingHex = "#FF453A", AccentHex = "#0A84FF", GlowHex = "#280A84FF", TextHex = "#F5F5F7" },
+                new ThemeCardItem { Key = "mist", DisplayName = "晨雾浅色", AutomationId = "ThemeCard_mist", BgHex = "#F5F5F7", SidebarHex = "#E6E6EC", CanvasHex = "#F5F5F7", CardHex = "#FFFFFF", RingHex = "#FF3B30", AccentHex = "#0071E3", GlowHex = "#180071E3", TextHex = "#1D1D1F" },
+                new ThemeCardItem { Key = "sunset", DisplayName = "暖阳日落", AutomationId = "ThemeCard_sunset", BgHex = "#140D10", SidebarHex = "#211519", CanvasHex = "#140D10", CardHex = "#2B1C21", RingHex = "#FF693A", AccentHex = "#FF9F0A", GlowHex = "#38FF9F0A", TextHex = "#FFF7F2" },
+                new ThemeCardItem { Key = "forest", DisplayName = "静谧森林", AutomationId = "ThemeCard_forest", BgHex = "#0A120E", SidebarHex = "#111E18", CanvasHex = "#0A120E", CardHex = "#182A22", RingHex = "#30D158", AccentHex = "#30D158", GlowHex = "#3530D158", TextHex = "#EEF7F2" }
             };
 
             DayStartOptions = new List<DayStartHourOption>();

@@ -43,7 +43,33 @@
                             <TextBlock Text="{Binding WeekHoursBig}" Style="{StaticResource Text.KPI}" FontSize="25" />
                             <TextBlock Text=" 小时" Style="{StaticResource TextStyle.Secondary}" VerticalAlignment="Bottom" Margin="2,0,0,3" />
                         </StackPanel>
-                        <TextBlock Text="{Binding WeekDeltaSub}" Style="{StaticResource TextStyle.Secondary}" FontSize="12" Margin="0,2,0,0" />
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0" VerticalAlignment="Center">
+                            <Border CornerRadius="6" Padding="6,2">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#2230D158" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsWeekDeltaPositive}" Value="False">
+                                                <Setter Property="Background" Value="#22FF453A" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Text="{Binding WeekDeltaBadgeText}" FontSize="11" FontWeight="SemiBold" Typography.NumeralAlignment="Tabular">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource Success}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsWeekDeltaPositive}" Value="False">
+                                                    <Setter Property="Foreground" Value="{DynamicResource Danger}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Border>
+                            <TextBlock Text="较上周" Style="{StaticResource Text.Caption}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource CardBorder}" Padding="14,12" Margin="5,0">
@@ -53,7 +79,7 @@
                             <Path Data="{StaticResource Geo.flame}" Width="12" Height="12" Stretch="Uniform" Stroke="{DynamicResource Warning}" StrokeThickness="1.8" Margin="5,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                         <TextBlock Text="{Binding StreakDaysBig}" Style="{StaticResource Text.KPI}" FontSize="25" />
-                        <TextBlock Text="{Binding LongestStreakSub}" Style="{StaticResource TextStyle.Secondary}" FontSize="12" Margin="0,2,0,0" />
+                        <TextBlock Text="{Binding LongestStreakSub}" Style="{StaticResource TextStyle.Secondary}" FontSize="12" Margin="0,4,0,0" />
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource CardBorder}" Padding="14,12" Margin="10,0,0,0">
@@ -63,7 +89,12 @@
                             <TextBlock Text="{Binding TotalHoursBig}" Style="{StaticResource Text.KPI}" FontSize="25" />
                             <TextBlock Text=" 小时" Style="{StaticResource TextStyle.Secondary}" VerticalAlignment="Bottom" Margin="2,0,0,3" />
                         </StackPanel>
-                        <TextBlock Text="{Binding CompletionRateSub}" Style="{StaticResource TextStyle.Secondary}" FontSize="12" Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0" VerticalAlignment="Center">
+                            <Border CornerRadius="6" Padding="6,2" Background="{DynamicResource Accent.Soft}">
+                                <TextBlock Text="{Binding CompletionRateBadgeText}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" Typography.NumeralAlignment="Tabular" />
+                            </Border>
+                            <TextBlock Text="{Binding TotalPomodorosSubText}" Style="{StaticResource Text.Caption}" Margin="6,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
                     </StackPanel>
                 </Border>
             </UniformGrid>
@@ -123,9 +154,14 @@
             <!-- 4. Focus Heatmap -->
             <Border Style="{StaticResource CardBorder}" Padding="16,14" Margin="0,0,0,12">
                 <StackPanel>
-                    <Grid Margin="0,0,0,8">
-                        <TextBlock Text="{Binding HeatmapTitle}" Style="{StaticResource Text.CardTitle}" HorizontalAlignment="Left" />
+                    <Grid Margin="0,0,0,10">
+                        <TextBlock Text="{Binding HeatmapTitle}" Style="{StaticResource Text.CardTitle}" HorizontalAlignment="Left" VerticalAlignment="Center" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <controls:SegmentedControl Width="148"
+                                                       SegmentHeight="26"
+                                                       Items="{Binding HeatmapRangeOptions}"
+                                                       SelectedKey="{Binding HeatmapRangeKey, Mode=TwoWay}"
+                                                       Margin="0,0,14,0" />
                             <TextBlock Text="少" Style="{StaticResource Text.Micro}" Margin="0,0,6,0" VerticalAlignment="Center" />
                             <Border Width="11" Height="11" CornerRadius="2.5" Background="{DynamicResource Heat.L0}" Margin="1.5,0" />
                             <Border Width="11" Height="11" CornerRadius="2.5" Background="{DynamicResource Heat.L1}" Margin="1.5,0" />
@@ -137,7 +173,7 @@
                     </Grid>
                     <charts:FocusHeatmapControl x:Name="HeatmapControl"
                                                 Cells="{Binding HeatmapCells}"
-                                                VisibleWeeksChanged="OnHeatmapWeeksChanged" />
+                                                TargetWeeks="{Binding HeatmapWeeksCount}" />
                 </StackPanel>
             </Border>
 
@@ -161,7 +197,7 @@
                                     <ItemsControl ItemsSource="{Binding Items}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Border CornerRadius="10" Background="{DynamicResource Surface.2}" Padding="12,8" Margin="0,0,0,4">
+                                                <Border BorderBrush="{DynamicResource Stroke.Subtle}" BorderThickness="0,0,0,1" Padding="6,8">
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="96" />

@@ -150,6 +150,7 @@ namespace PomodoroFocus.App.Views
                 if (e.Key == Key.D5) { _vm.NavigateTo("settings"); e.Handled = true; return; }
                 if (e.Key == Key.N) { _vm.TriggerNewTaskShortcut(); e.Handled = true; return; }
                 if (e.Key == Key.F) { _vm.TriggerSearchTaskShortcut(); e.Handled = true; return; }
+                if (e.Key == Key.Oem5) { _vm.ToggleZenModeCommand.Execute(null); e.Handled = true; return; }
                 return;
             }
 

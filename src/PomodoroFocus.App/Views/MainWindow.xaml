@@ -18,9 +18,9 @@
         Icon="pack://application:,,,/Assets/AppIcon.ico">
 
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="40"
+        <WindowChrome CaptionHeight="42"
                       ResizeBorderThickness="6"
-                      GlassFrameThickness="0"
+                      GlassFrameThickness="-1"
                       CornerRadius="0"
                       UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
@@ -29,14 +29,14 @@
         <vm:BoolToVisConverter x:Key="BoolToVis" />
         <vm:BoolToVisConverter x:Key="InvBoolToVis" Invert="True" />
 
-        <!-- Sidebar Navigation Button Template -->
+        <!-- Sidebar Navigation Button Template (macOS Source List) -->
         <Style x:Key="NavItemButton" TargetType="Button">
-            <Setter Property="Height" Value="42" />
+            <Setter Property="Height" Value="38" />
             <Setter Property="Margin" Value="10,2" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
             <Setter Property="FontFamily" Value="{StaticResource Font.UI}" />
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="13.5" />
             <Setter Property="FontWeight" Value="Normal" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -46,14 +46,14 @@
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bd"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="10"
+                                CornerRadius="8"
                                 Padding="8,0"
                                 SnapsToDevicePixels="True">
                             <ContentPresenter VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Surface.1}" />
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Surface.2}" />
                                 <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -64,445 +64,630 @@
     </Window.Resources>
 
     <Grid x:Name="RootHost" ClipToBounds="True" Background="{DynamicResource Bg.Base}">
-        <!-- Background Ambient Radial Glows -->
-        <Canvas IsHitTestVisible="False" ClipToBounds="True">
-            <Ellipse Width="800" Height="800" Canvas.Left="-320" Canvas.Top="-320" Fill="{DynamicResource Phase.GlowBrush}" />
-        </Canvas>
-        <Ellipse Width="760"
-                 Height="760"
-                 HorizontalAlignment="Right"
-                 VerticalAlignment="Bottom"
-                 Margin="0,0,-260,-280"
-                 Fill="{DynamicResource Bg.Glow2Brush}"
-                 IsHitTestVisible="False" />
+        <!-- Main Layout Shell: Full-Height Sidebar (Col 0) + Right Chrome & Inset Content Sheet (Col 1) -->
+        <Grid Background="{DynamicResource Sidebar.Bg}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding SidebarWidth}" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <!-- Main Layout Shell -->
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+            <!-- Col 0: Full-Height Integrated Sidebar (Y=0 to Bottom, macOS Sequoia / Linear style) -->
+            <Border Grid.Column="0"
+                    Background="{DynamicResource Sidebar.Bg}"
+                    BorderThickness="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="48" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-            <!-- 1. Custom TitleBar (40 DIP) -->
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+                    <!-- Row 0: Integrated Brand Header (Expanded) -->
+                    <StackPanel Grid.Row="0"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="16,4,0,0"
+                                Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}">
+                        <Image Source="{StaticResource Logo}" Width="20" Height="20" Margin="0,0,9,0" RenderOptions.BitmapScalingMode="HighQuality" />
+                        <TextBlock Text="番茄专注" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource Text.Primary}" VerticalAlignment="Center" />
+                    </StackPanel>
 
-                <!-- Brand Logo + Name -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
-                    <Image Source="{StaticResource Logo}" Width="18" Height="18" Margin="0,0,8,0" RenderOptions.BitmapScalingMode="HighQuality" />
-                    <TextBlock Text="番茄专注" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Text.Secondary}" VerticalAlignment="Center" />
-                </StackPanel>
+                    <!-- Row 0: Compact Brand Logo (Centered in 68px rail) -->
+                    <Image Grid.Row="0"
+                           Source="{StaticResource Logo}"
+                           Width="22"
+                           Height="22"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Margin="0,4,0,0"
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           Visibility="{Binding IsCompactLayout, Converter={StaticResource BoolToVis}}" />
 
-                <!-- Center Mini Timer Pill (visible when away from Focus view & active) -->
-                <Button Grid.Column="1"
-                        AutomationProperties.AutomationId="TitleBarTimerPill"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="focus"
-                        WindowChrome.IsHitTestVisibleInChrome="True"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Cursor="Hand"
-                        Visibility="{Binding ShowTitleBarTimerPill, Converter={StaticResource BoolToVis}}">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border Height="26" CornerRadius="13" Padding="12,0" Background="{DynamicResource Phase.SoftBrush}">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Ellipse Width="7" Height="7" Fill="{DynamicResource Phase.StartBrush}" Margin="0,0,7,0" VerticalAlignment="Center" />
-                                    <TextBlock Text="{Binding TitleBarTimerPillText}"
-                                               FontSize="12"
-                                               FontWeight="SemiBold"
-                                               Foreground="{DynamicResource Phase.StartBrush}"
-                                               Typography.NumeralAlignment="Tabular"
-                                               VerticalAlignment="Center" />
-                                </StackPanel>
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
+                    <!-- Row 1: 5 Navigation Buttons (macOS Source List) -->
+                    <StackPanel Grid.Row="1" Margin="0,6,0,0">
+                        <TextBlock Text="专注工作台"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Text.Tertiary}"
+                                   Margin="18,2,0,6"
+                                   Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}" />
 
-                <!-- Right Tool Buttons & Window Caption Buttons -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True">
-                    <!-- Active Ambient Audio Indicator -->
-                    <Button Command="{Binding NavigateCommand}"
-                            CommandParameter="audio"
-                            Style="{StaticResource Button.Ghost}"
-                            Height="28"
-                            Padding="8,0"
-                            Margin="0,0,4,0"
-                            ToolTip="环境音播放中，点击查看混音器"
-                            Visibility="{Binding AudioVM.IsAudibleNow, Converter={StaticResource BoolToVis}}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="{StaticResource Icon.NavAudio}" Style="{StaticResource IconGlyph}" FontSize="13" Foreground="{DynamicResource Accent}" Margin="0,0,5,0" />
-                            <Border Width="2.5" Height="6" CornerRadius="1" Background="{DynamicResource Accent}" Margin="1,0" VerticalAlignment="Bottom" />
-                            <Border Width="2.5" Height="10" CornerRadius="1" Background="{DynamicResource Accent}" Margin="1,0" VerticalAlignment="Bottom" />
-                            <Border Width="2.5" Height="7" CornerRadius="1" Background="{DynamicResource Accent}" Margin="1,0,5,0" VerticalAlignment="Bottom" />
-                            <TextBlock Text="{Binding AudioVM.ActiveTrackCount}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Button>
-
-                    <!-- Pin Always On Top -->
-                    <Button AutomationProperties.AutomationId="PinTopmostButton"
-                            Command="{Binding ToggleAlwaysOnTopCommand}"
-                            Width="36"
-                            Height="30"
-                            MinWidth="36"
-                            Padding="0"
-                            Margin="0,0,2,0"
-                            ToolTip="始终置顶"
-                            Cursor="Hand">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border x:Name="PinBd" CornerRadius="8">
+                        <!-- Focus -->
+                        <Button AutomationProperties.AutomationId="NavFocusButton"
+                                Command="{Binding NavigateCommand}"
+                                CommandParameter="focus"
+                                ToolTip="专注 (Ctrl+1)">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource NavItemButton}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFocusView}" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource Sidebar.ItemSelected}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+                                            <Setter Property="FontWeight" Value="SemiBold" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="2,0,0,0">
+                                <Border Width="24" Height="24" CornerRadius="6" VerticalAlignment="Center">
                                     <Border.Style>
                                         <Style TargetType="Border">
-                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="Background" Value="#22FF453A" />
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsAlwaysOnTop}" Value="True">
-                                                    <Setter Property="Background" Value="{DynamicResource Accent.Soft}" />
+                                                <DataTrigger Binding="{Binding IsFocusView}" Value="True">
+                                                    <Setter Property="Background" Value="#FFFF453A" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Border.Style>
-                                    <TextBlock FontSize="13">
+                                    <TextBlock Text="{StaticResource Icon.NavFocus}" FontSize="13">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock" BasedOn="{StaticResource IconGlyph}">
-                                                <Setter Property="Text" Value="{StaticResource Icon.Pin}" />
-                                                <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+                                                <Setter Property="Foreground" Value="#FFFF453A" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsAlwaysOnTop}" Value="True">
-                                                        <Setter Property="Text" Value="{StaticResource Icon.Unpin}" />
-                                                        <Setter Property="Foreground" Value="{DynamicResource Accent}" />
+                                                    <DataTrigger Binding="{Binding IsFocusView}" Value="True">
+                                                        <Setter Property="Foreground" Value="#FFFFFFFF" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="PinBd" Property="Background" Value="{DynamicResource Surface.2}" />
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
+                                <TextBlock Text="专注" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Tasks -->
+                        <Button AutomationProperties.AutomationId="NavTasksButton"
+                                Command="{Binding NavigateCommand}"
+                                CommandParameter="tasks"
+                                ToolTip="任务 (Ctrl+2)">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource NavItemButton}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsTasksView}" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource Sidebar.ItemSelected}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+                                            <Setter Property="FontWeight" Value="SemiBold" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Grid Margin="2,0,2,0">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <Border Width="24" Height="24" CornerRadius="6" VerticalAlignment="Center">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="#220A84FF" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsTasksView}" Value="True">
+                                                        <Setter Property="Background" Value="#FF0A84FF" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock Text="{StaticResource Icon.NavTasks}" FontSize="13">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource IconGlyph}">
+                                                    <Setter Property="Foreground" Value="#FF0A84FF" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsTasksView}" Value="True">
+                                                            <Setter Property="Foreground" Value="#FFFFFFFF" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Border>
+                                    <TextBlock Text="任务" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}" />
+                                </StackPanel>
+                                <Border Height="20"
+                                        MinWidth="20"
+                                        CornerRadius="10"
+                                        Padding="6,0"
+                                        Background="{DynamicResource Surface.3}"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}">
+                                    <TextBlock Text="{Binding SidebarActiveTaskCount}"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource Text.Secondary}"
+                                               Typography.NumeralAlignment="Tabular"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Visibility="{Binding HasSidebarActiveTasks, Converter={StaticResource BoolToVis}}" />
+                                </Border>
+                            </Grid>
+                        </Button>
+
+                        <!-- Stats -->
+                        <Button AutomationProperties.AutomationId="NavStatsButton"
+                                Command="{Binding NavigateCommand}"
+                                CommandParameter="stats"
+                                ToolTip="统计 (Ctrl+3)">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource NavItemButton}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsStatsView}" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource Sidebar.ItemSelected}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+                                            <Setter Property="FontWeight" Value="SemiBold" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="2,0,0,0">
+                                <Border Width="24" Height="24" CornerRadius="6" VerticalAlignment="Center">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="#225E5CE6" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStatsView}" Value="True">
+                                                    <Setter Property="Background" Value="#FF5E5CE6" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="{StaticResource Icon.NavStats}" FontSize="13">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource IconGlyph}">
+                                                <Setter Property="Foreground" Value="#FF5E5CE6" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsStatsView}" Value="True">
+                                                        <Setter Property="Foreground" Value="#FFFFFFFF" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Border>
+                                <TextBlock Text="统计" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Ambient Audio -->
+                        <Button AutomationProperties.AutomationId="NavAudioButton"
+                                Command="{Binding NavigateCommand}"
+                                CommandParameter="audio"
+                                ToolTip="环境音 (Ctrl+4)">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource NavItemButton}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsAudioView}" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource Sidebar.ItemSelected}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+                                            <Setter Property="FontWeight" Value="SemiBold" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Grid Margin="2,0,4,0">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <Border Width="24" Height="24" CornerRadius="6" VerticalAlignment="Center">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="#2230D158" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsAudioView}" Value="True">
+                                                        <Setter Property="Background" Value="#FF30D158" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock Text="{StaticResource Icon.NavAudio}" FontSize="13">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource IconGlyph}">
+                                                    <Setter Property="Foreground" Value="#FF30D158" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsAudioView}" Value="True">
+                                                            <Setter Property="Foreground" Value="#FFFFFFFF" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Border>
+                                    <TextBlock Text="环境音" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}" />
+                                </StackPanel>
+                                <Ellipse Width="6"
+                                         Height="6"
+                                         Fill="{DynamicResource Success}"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Center"
+                                         Visibility="{Binding AudioVM.IsAudibleNow, Converter={StaticResource BoolToVis}}" />
+                            </Grid>
+                        </Button>
+
+                        <!-- Settings -->
+                        <Button AutomationProperties.AutomationId="NavSettingsButton"
+                                Command="{Binding NavigateCommand}"
+                                CommandParameter="settings"
+                                ToolTip="设置 (Ctrl+5)">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource NavItemButton}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSettingsView}" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource Sidebar.ItemSelected}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+                                            <Setter Property="FontWeight" Value="SemiBold" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="2,0,0,0">
+                                <Border Width="24" Height="24" CornerRadius="6" VerticalAlignment="Center">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="#228E8E93" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSettingsView}" Value="True">
+                                                    <Setter Property="Background" Value="#FF8E8E93" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="{StaticResource Icon.NavSettings}" FontSize="13">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource IconGlyph}">
+                                                <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsSettingsView}" Value="True">
+                                                        <Setter Property="Foreground" Value="#FFFFFFFF" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Border>
+                                <TextBlock Text="设置" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Row 2: Bottom Today Goal Mini Card (Expanded, global unique Today Goal card) -->
+                    <Border Grid.Row="2"
+                            Margin="12"
+                            Padding="12"
+                            CornerRadius="12"
+                            Background="{DynamicResource Surface.1}"
+                            BorderBrush="{DynamicResource Stroke.Subtle}"
+                            BorderThickness="1"
+                            Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Text="今日目标" FontSize="11.5" Foreground="{DynamicResource Text.Secondary}" />
+                                <TextBlock Text="{Binding SidebarGoalCountText}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource Text.Primary}" Typography.NumeralAlignment="Tabular" HorizontalAlignment="Right" />
+                            </Grid>
+                            <Grid Height="6" Margin="0,0,0,6">
+                                <Border CornerRadius="3" Background="{DynamicResource Ring.Track}" />
+                                <ProgressBar Value="{Binding SidebarGoalPercent, Mode=OneWay}" Maximum="100" Height="6" Background="Transparent" BorderThickness="0">
+                                    <ProgressBar.Template>
+                                        <ControlTemplate TargetType="ProgressBar">
+                                            <Grid x:Name="PART_Track">
+                                                <Border x:Name="PART_Indicator" HorizontalAlignment="Left" CornerRadius="3" Background="{DynamicResource Phase.Gradient}" />
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </ProgressBar.Template>
+                                </ProgressBar>
+                            </Grid>
+                            <TextBlock Text="{Binding SidebarTodayDurationText}" Style="{StaticResource Text.Micro}" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Row 2: Bottom Compact Goal Badge (Compact 68px rail) -->
+                    <Border Grid.Row="2"
+                            Width="40"
+                            Height="40"
+                            CornerRadius="999"
+                            Margin="0,0,0,14"
+                            Background="{DynamicResource Phase.SoftBrush}"
+                            BorderBrush="{DynamicResource Phase.StartBrush}"
+                            BorderThickness="1.5"
+                            HorizontalAlignment="Center"
+                            ToolTip="{Binding SidebarTodayDurationText}"
+                            Visibility="{Binding IsCompactLayout, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{Binding SidebarGoalCountText}"
+                                   FontSize="10.5"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Phase.StartBrush}"
+                                   Typography.NumeralAlignment="Tabular"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Col 1: Right Frameless Tool TopBar (42 DIP) + Inset Content Sheet -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="42" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Row 0: Right Frameless Tool TopBar -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Center Mini Timer Pill (visible when away from Focus view & active) -->
+                    <Button Grid.Column="0"
+                            AutomationProperties.AutomationId="TitleBarTimerPill"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="focus"
+                            WindowChrome.IsHitTestVisibleInChrome="True"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Cursor="Hand"
+                            Visibility="{Binding ShowTitleBarTimerPill, Converter={StaticResource BoolToVis}}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Height="26" CornerRadius="13" Padding="12,0" Background="{DynamicResource Phase.SoftBrush}">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Ellipse Width="7" Height="7" Fill="{DynamicResource Phase.StartBrush}" Margin="0,0,7,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding TitleBarTimerPillText}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource Phase.StartBrush}"
+                                                   Typography.NumeralAlignment="Tabular"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Border>
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
 
-                    <!-- Enter Mini Mode -->
-                    <Button AutomationProperties.AutomationId="EnterMiniModeButton"
-                            Command="{Binding ToggleMiniModeCommand}"
-                            Style="{StaticResource Button.Ghost}"
-                            Width="36"
-                            Height="30"
-                            MinWidth="36"
-                            Padding="0"
-                            Margin="0,0,6,0"
-                            ToolTip="迷你悬浮窗 (Ctrl+Alt+M)">
-                        <TextBlock Text="{StaticResource Icon.MiniEnter}" Style="{StaticResource IconGlyph}" FontSize="13" />
-                    </Button>
+                    <!-- Right Tool Buttons & Window Caption Buttons -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True">
+                        <!-- Active Ambient Audio Indicator -->
+                        <Button Command="{Binding NavigateCommand}"
+                                CommandParameter="audio"
+                                Style="{StaticResource Button.Ghost}"
+                                Height="28"
+                                Padding="8,0"
+                                Margin="0,0,4,0"
+                                ToolTip="环境音播放中，点击查看混音器"
+                                Visibility="{Binding AudioVM.IsAudibleNow, Converter={StaticResource BoolToVis}}">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{StaticResource Icon.NavAudio}" Style="{StaticResource IconGlyph}" FontSize="13" Foreground="{DynamicResource Accent}" Margin="0,0,5,0" />
+                                <Border Width="2.5" Height="6" CornerRadius="1" Background="{DynamicResource Accent}" Margin="1,0" VerticalAlignment="Bottom" />
+                                <Border Width="2.5" Height="10" CornerRadius="1" Background="{DynamicResource Accent}" Margin="1,0" VerticalAlignment="Bottom" />
+                                <Border Width="2.5" Height="7" CornerRadius="1" Background="{DynamicResource Accent}" Margin="1,0,5,0" VerticalAlignment="Bottom" />
+                                <TextBlock Text="{Binding AudioVM.ActiveTrackCount}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
 
-                    <!-- Caption Minimize / Maximize / Close -->
-                    <Button Click="OnMinimizeClick" Style="{StaticResource Button.Caption}" Content="{StaticResource Icon.CaptionMinimize}" ToolTip="最小化" />
-                    <Button x:Name="MaxRestoreButton" Click="OnMaxRestoreClick" Style="{StaticResource Button.Caption}" Content="{StaticResource Icon.CaptionMaximize}" ToolTip="最大化" />
-                    <Button Click="OnCloseButtonClick" Style="{StaticResource Button.CaptionClose}" Content="{StaticResource Icon.CaptionClose}" ToolTip="关闭" />
-                </StackPanel>
-            </Grid>
+                        <!-- Zen Mode / Inspector Right Rail Toggle -->
+                        <Button AutomationProperties.AutomationId="ToggleZenModeButton"
+                                Command="{Binding ToggleZenModeCommand}"
+                                Width="36"
+                                Height="30"
+                                MinWidth="36"
+                                Padding="0"
+                                Margin="0,0,2,0"
+                                ToolTip="收起/展开右侧栏 · 禅模式 (Ctrl+\)"
+                                Cursor="Hand"
+                                Visibility="{Binding ShowZenToggleButton, Converter={StaticResource BoolToVis}}">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="ZenBd" CornerRadius="8">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="Transparent" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsZenMode}" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource Accent.Soft}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Path Data="{StaticResource Geo.sidebar}"
+                                              Width="15"
+                                              Height="15"
+                                              Stretch="Uniform"
+                                              StrokeThickness="1.75"
+                                              StrokeStartLineCap="Round"
+                                              StrokeEndLineCap="Round"
+                                              StrokeLineJoin="Round"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center">
+                                            <Path.Style>
+                                                <Style TargetType="Path">
+                                                    <Setter Property="Stroke" Value="{DynamicResource Text.Secondary}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsZenMode}" Value="True">
+                                                            <Setter Property="Stroke" Value="{DynamicResource Accent}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="ZenBd" Property="Background" Value="{DynamicResource Surface.2}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
 
-            <!-- 2. Body: Left Sidebar + Right Content Stage -->
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{Binding SidebarWidth}" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+                        <!-- Pin Always On Top -->
+                        <Button AutomationProperties.AutomationId="PinTopmostButton"
+                                Command="{Binding ToggleAlwaysOnTopCommand}"
+                                Width="36"
+                                Height="30"
+                                MinWidth="36"
+                                Padding="0"
+                                Margin="0,0,2,0"
+                                ToolTip="始终置顶"
+                                Cursor="Hand">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="PinBd" CornerRadius="8">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="Transparent" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsAlwaysOnTop}" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource Accent.Soft}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock FontSize="13">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource IconGlyph}">
+                                                    <Setter Property="Text" Value="{StaticResource Icon.Pin}" />
+                                                    <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsAlwaysOnTop}" Value="True">
+                                                            <Setter Property="Text" Value="{StaticResource Icon.Unpin}" />
+                                                            <Setter Property="Foreground" Value="{DynamicResource Accent}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="PinBd" Property="Background" Value="{DynamicResource Surface.2}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
 
-                <!-- Left Navigation Sidebar -->
-                <Border Grid.Column="0"
-                        Background="{DynamicResource Sidebar.Bg}"
+                        <!-- Enter Mini Mode -->
+                        <Button AutomationProperties.AutomationId="EnterMiniModeButton"
+                                Command="{Binding ToggleMiniModeCommand}"
+                                Style="{StaticResource Button.Ghost}"
+                                Width="36"
+                                Height="30"
+                                MinWidth="36"
+                                Padding="0"
+                                Margin="0,0,6,0"
+                                ToolTip="迷你悬浮窗 (Ctrl+Alt+M)">
+                            <TextBlock Text="{StaticResource Icon.MiniEnter}" Style="{StaticResource IconGlyph}" FontSize="13" />
+                        </Button>
+
+                        <!-- Caption Minimize / Maximize / Close -->
+                        <Button Click="OnMinimizeClick" Style="{StaticResource Button.Caption}" Content="{StaticResource Icon.CaptionMinimize}" ToolTip="最小化" />
+                        <Button x:Name="MaxRestoreButton" Click="OnMaxRestoreClick" Style="{StaticResource Button.Caption}" Content="{StaticResource Icon.CaptionMaximize}" ToolTip="最大化" />
+                        <Button Click="OnCloseButtonClick" Style="{StaticResource Button.CaptionClose}" Content="{StaticResource Icon.CaptionClose}" ToolTip="关闭" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Row 1: Inset Rounded Content Sheet -->
+                <Border x:Name="ContentSheetBorder"
+                        Grid.Row="1"
+                        CornerRadius="14,0,0,0"
+                        Background="{DynamicResource Bg.Base}"
                         BorderBrush="{DynamicResource Stroke.Subtle}"
-                        BorderThickness="0,1,1,0">
+                        BorderThickness="1,1,0,0"
+                        ClipToBounds="True">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <!-- 5 Navigation Buttons -->
-                        <StackPanel Grid.Row="0" Margin="0,12,0,0">
-                            <!-- Focus -->
-                            <Button AutomationProperties.AutomationId="NavFocusButton"
-                                    Command="{Binding NavigateCommand}"
-                                    CommandParameter="focus"
-                                    ToolTip="专注 (Ctrl+1)">
-                                <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource NavItemButton}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsFocusView}" Value="True">
-                                                <Setter Property="Background" Value="{DynamicResource Surface.2}" />
-                                                <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
-                                                <Setter Property="FontWeight" Value="SemiBold" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Grid>
-                                    <Border Width="3" Height="18" CornerRadius="1.5" HorizontalAlignment="Left" Margin="-6,0,0,0" Background="{DynamicResource Phase.StartBrush}" Visibility="{Binding IsFocusView, Converter={StaticResource BoolToVis}}" />
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="6,0,0,0">
-                                        <TextBlock Text="{StaticResource Icon.NavFocus}" Style="{StaticResource IconGlyph}" FontSize="17" Width="22" />
-                                        <TextBlock Text="专注" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}" />
-                                    </StackPanel>
-                                </Grid>
-                            </Button>
+                        <!-- Background Ambient Radial Glows inside Inset Sheet -->
+                        <Canvas Grid.RowSpan="2" IsHitTestVisible="False" ClipToBounds="True">
+                            <Ellipse Width="780" Height="780" Canvas.Left="-300" Canvas.Top="-340" Fill="{DynamicResource Phase.GlowBrush}" />
+                        </Canvas>
+                        <Ellipse Grid.RowSpan="2"
+                                 Width="740"
+                                 Height="740"
+                                 HorizontalAlignment="Right"
+                                 VerticalAlignment="Bottom"
+                                 Margin="0,0,-260,-280"
+                                 Fill="{DynamicResource Bg.Glow2Brush}"
+                                 IsHitTestVisible="False" />
 
-                            <!-- Tasks -->
-                            <Button AutomationProperties.AutomationId="NavTasksButton"
-                                    Command="{Binding NavigateCommand}"
-                                    CommandParameter="tasks"
-                                    ToolTip="任务 (Ctrl+2)">
-                                <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource NavItemButton}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsTasksView}" Value="True">
-                                                <Setter Property="Background" Value="{DynamicResource Surface.2}" />
-                                                <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
-                                                <Setter Property="FontWeight" Value="SemiBold" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Grid>
-                                    <Border Width="3" Height="18" CornerRadius="1.5" HorizontalAlignment="Left" Margin="-6,0,0,0" Background="{DynamicResource Phase.StartBrush}" Visibility="{Binding IsTasksView, Converter={StaticResource BoolToVis}}" />
-                                    <Grid Margin="6,0,2,0">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                            <TextBlock Text="{StaticResource Icon.NavTasks}" Style="{StaticResource IconGlyph}" FontSize="17" Width="22" />
-                                            <TextBlock Text="任务" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}" />
-                                        </StackPanel>
-                                        <Border Height="20"
-                                                MinWidth="20"
-                                                CornerRadius="10"
-                                                Padding="6,0"
-                                                Background="{DynamicResource Surface.3}"
-                                                HorizontalAlignment="Right"
-                                                VerticalAlignment="Center"
-                                                Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}">
-                                            <TextBlock Text="{Binding SidebarActiveTaskCount}"
-                                                       FontSize="11"
-                                                       FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource Text.Secondary}"
-                                                       Typography.NumeralAlignment="Tabular"
-                                                       HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center"
-                                                       Visibility="{Binding HasSidebarActiveTasks, Converter={StaticResource BoolToVis}}" />
-                                        </Border>
-                                    </Grid>
-                                </Grid>
-                            </Button>
-
-                            <!-- Stats -->
-                            <Button AutomationProperties.AutomationId="NavStatsButton"
-                                    Command="{Binding NavigateCommand}"
-                                    CommandParameter="stats"
-                                    ToolTip="统计 (Ctrl+3)">
-                                <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource NavItemButton}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsStatsView}" Value="True">
-                                                <Setter Property="Background" Value="{DynamicResource Surface.2}" />
-                                                <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
-                                                <Setter Property="FontWeight" Value="SemiBold" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Grid>
-                                    <Border Width="3" Height="18" CornerRadius="1.5" HorizontalAlignment="Left" Margin="-6,0,0,0" Background="{DynamicResource Phase.StartBrush}" Visibility="{Binding IsStatsView, Converter={StaticResource BoolToVis}}" />
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="6,0,0,0">
-                                        <TextBlock Text="{StaticResource Icon.NavStats}" Style="{StaticResource IconGlyph}" FontSize="17" Width="22" />
-                                        <TextBlock Text="统计" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}" />
-                                    </StackPanel>
-                                </Grid>
-                            </Button>
-
-                            <!-- Ambient Audio -->
-                            <Button AutomationProperties.AutomationId="NavAudioButton"
-                                    Command="{Binding NavigateCommand}"
-                                    CommandParameter="audio"
-                                    ToolTip="环境音 (Ctrl+4)">
-                                <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource NavItemButton}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsAudioView}" Value="True">
-                                                <Setter Property="Background" Value="{DynamicResource Surface.2}" />
-                                                <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
-                                                <Setter Property="FontWeight" Value="SemiBold" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Grid>
-                                    <Border Width="3" Height="18" CornerRadius="1.5" HorizontalAlignment="Left" Margin="-6,0,0,0" Background="{DynamicResource Phase.StartBrush}" Visibility="{Binding IsAudioView, Converter={StaticResource BoolToVis}}" />
-                                    <Grid Margin="6,0,4,0">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                            <TextBlock Text="{StaticResource Icon.NavAudio}" Style="{StaticResource IconGlyph}" FontSize="17" Width="22" />
-                                            <TextBlock Text="环境音" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}" />
-                                        </StackPanel>
-                                        <Ellipse Width="6"
-                                                 Height="6"
-                                                 Fill="{DynamicResource Success}"
-                                                 HorizontalAlignment="Right"
-                                                 VerticalAlignment="Center"
-                                                 Visibility="{Binding AudioVM.IsAudibleNow, Converter={StaticResource BoolToVis}}" />
-                                    </Grid>
-                                </Grid>
-                            </Button>
-
-                            <!-- Settings -->
-                            <Button AutomationProperties.AutomationId="NavSettingsButton"
-                                    Command="{Binding NavigateCommand}"
-                                    CommandParameter="settings"
-                                    ToolTip="设置 (Ctrl+5)">
-                                <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource NavItemButton}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsSettingsView}" Value="True">
-                                                <Setter Property="Background" Value="{DynamicResource Surface.2}" />
-                                                <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
-                                                <Setter Property="FontWeight" Value="SemiBold" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Grid>
-                                    <Border Width="3" Height="18" CornerRadius="1.5" HorizontalAlignment="Left" Margin="-6,0,0,0" Background="{DynamicResource Phase.StartBrush}" Visibility="{Binding IsSettingsView, Converter={StaticResource BoolToVis}}" />
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="6,0,0,0">
-                                        <TextBlock Text="{StaticResource Icon.NavSettings}" Style="{StaticResource IconGlyph}" FontSize="17" Width="22" />
-                                        <TextBlock Text="设置" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}" />
-                                    </StackPanel>
-                                </Grid>
-                            </Button>
-                        </StackPanel>
-
-                        <!-- Bottom Today Goal Mini Card (Expanded) -->
-                        <Border Grid.Row="1"
-                                Margin="12"
-                                Padding="12"
-                                CornerRadius="12"
-                                Background="{DynamicResource Surface.1}"
-                                BorderBrush="{DynamicResource Stroke.Subtle}"
-                                BorderThickness="1"
-                                Visibility="{Binding IsCompactLayout, Converter={StaticResource InvBoolToVis}}">
-                            <StackPanel>
-                                <Grid Margin="0,0,0,6">
-                                    <TextBlock Text="今日目标" FontSize="11.5" Foreground="{DynamicResource Text.Secondary}" />
-                                    <TextBlock Text="{Binding SidebarGoalCountText}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource Text.Primary}" Typography.NumeralAlignment="Tabular" HorizontalAlignment="Right" />
-                                </Grid>
-                                <Grid Height="6" Margin="0,0,0,6">
-                                    <Border CornerRadius="3" Background="{DynamicResource Ring.Track}" />
-                                    <ProgressBar Value="{Binding SidebarGoalPercent, Mode=OneWay}" Maximum="100" Height="6" Background="Transparent" BorderThickness="0">
-                                        <ProgressBar.Template>
-                                            <ControlTemplate TargetType="ProgressBar">
-                                                <Grid x:Name="PART_Track">
-                                                    <Border x:Name="PART_Indicator" HorizontalAlignment="Left" CornerRadius="3" Background="{DynamicResource Phase.Gradient}" />
-                                                </Grid>
-                                            </ControlTemplate>
-                                        </ProgressBar.Template>
-                                    </ProgressBar>
-                                </Grid>
-                                <TextBlock Text="{Binding SidebarTodayDurationText}" Style="{StaticResource Text.Micro}" TextTrimming="CharacterEllipsis" />
-                            </StackPanel>
+                        <!-- Top InfoBar -->
+                        <Border Grid.Row="0"
+                                Margin="24,12,24,0"
+                                Padding="12,8"
+                                CornerRadius="10"
+                                Background="{DynamicResource Surface.2}"
+                                BorderBrush="{DynamicResource Warning}"
+                                BorderThickness="3,1,1,1"
+                                Visibility="{Binding HasInfoBar, Converter={StaticResource BoolToVis}}">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="{StaticResource Icon.Info}" Style="{StaticResource IconGlyph}" FontSize="14" Foreground="{DynamicResource Warning}" Margin="0,0,8,0" />
+                                    <TextBlock Text="{Binding InfoBarMessage}" FontSize="12.5" Foreground="{DynamicResource Text.Primary}" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <Button Command="{Binding DismissInfoBarCommand}" Style="{StaticResource Button.Ghost}" Width="24" Height="24" MinWidth="24" Padding="0" HorizontalAlignment="Right">
+                                    <TextBlock Text="{StaticResource Icon.Close}" Style="{StaticResource IconGlyph}" FontSize="10" />
+                                </Button>
+                            </Grid>
                         </Border>
 
-                        <!-- Bottom Compact Goal Badge (Compact 68px rail) -->
+                        <!-- Active View Stage -->
+                        <Grid x:Name="ViewStageHost" Grid.Row="1">
+                            <Grid.RenderTransform>
+                                <TranslateTransform x:Name="ViewStageTransform" Y="0" />
+                            </Grid.RenderTransform>
+                            <views:FocusView x:Name="FocusViewControl" DataContext="{Binding FocusVM}" Visibility="{Binding DataContext.IsFocusView, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                            <views:TasksView x:Name="TasksViewControl" DataContext="{Binding TasksVM}" Visibility="{Binding DataContext.IsTasksView, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                            <views:StatsView x:Name="StatsViewControl" DataContext="{Binding StatsVM}" Visibility="{Binding DataContext.IsStatsView, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                            <views:AmbientAudioView x:Name="AudioViewControl" DataContext="{Binding AudioVM}" Visibility="{Binding DataContext.IsAudioView, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                            <views:SettingsView x:Name="SettingsViewControl" DataContext="{Binding SettingsVM}" Visibility="{Binding DataContext.IsSettingsView, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                        </Grid>
+
+                        <!-- Bottom-Centered Snackbar -->
                         <Border Grid.Row="1"
-                                Width="40"
-                                Height="40"
-                                CornerRadius="999"
-                                Margin="0,0,0,14"
-                                Background="{DynamicResource Phase.SoftBrush}"
-                                BorderBrush="{DynamicResource Phase.StartBrush}"
-                                BorderThickness="1.5"
                                 HorizontalAlignment="Center"
-                                ToolTip="{Binding SidebarTodayDurationText}"
-                                Visibility="{Binding IsCompactLayout, Converter={StaticResource BoolToVis}}">
-                            <TextBlock Text="{Binding SidebarGoalCountText}"
-                                       FontSize="10.5"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Phase.StartBrush}"
-                                       Typography.NumeralAlignment="Tabular"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" />
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,0,22"
+                                Height="44"
+                                CornerRadius="12"
+                                Padding="16,0"
+                                Background="{DynamicResource Surface.Solid}"
+                                BorderBrush="{DynamicResource Stroke.Strong}"
+                                BorderThickness="1"
+                                Visibility="{Binding IsSnackbarVisible, Converter={StaticResource BoolToVis}}">
+                            <Border.Effect>
+                                <DropShadowEffect Color="{DynamicResource Shadow.Color}" BlurRadius="22" ShadowDepth="6" Opacity="{DynamicResource Shadow.Opacity}" />
+                            </Border.Effect>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding SnackbarMessage}" FontSize="13" Foreground="{DynamicResource Text.Primary}" VerticalAlignment="Center" />
+                                <Button Content="{Binding SnackbarActionText}"
+                                        Command="{Binding SnackbarActionCommand}"
+                                        Style="{StaticResource Button.Ghost}"
+                                        Foreground="{DynamicResource Accent}"
+                                        FontWeight="SemiBold"
+                                        Margin="12,0,-6,0"
+                                        Visibility="{Binding HasSnackbarAction, Converter={StaticResource BoolToVis}}" />
+                            </StackPanel>
                         </Border>
                     </Grid>
                 </Border>
-
-                <!-- Right Content Stage -->
-                <Grid Grid.Column="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-
-                    <!-- Top InfoBar -->
-                    <Border Grid.Row="0"
-                            Margin="24,12,24,0"
-                            Padding="12,8"
-                            CornerRadius="10"
-                            Background="{DynamicResource Surface.2}"
-                            BorderBrush="{DynamicResource Warning}"
-                            BorderThickness="3,1,1,1"
-                            Visibility="{Binding HasInfoBar, Converter={StaticResource BoolToVis}}">
-                        <Grid>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="{StaticResource Icon.Info}" Style="{StaticResource IconGlyph}" FontSize="14" Foreground="{DynamicResource Warning}" Margin="0,0,8,0" />
-                                <TextBlock Text="{Binding InfoBarMessage}" FontSize="12.5" Foreground="{DynamicResource Text.Primary}" TextTrimming="CharacterEllipsis" />
-                            </StackPanel>
-                            <Button Command="{Binding DismissInfoBarCommand}" Style="{StaticResource Button.Ghost}" Width="24" Height="24" MinWidth="24" Padding="0" HorizontalAlignment="Right">
-                                <TextBlock Text="{StaticResource Icon.Close}" Style="{StaticResource IconGlyph}" FontSize="10" />
-                            </Button>
-                        </Grid>
-                    </Border>
-
-                    <!-- Active View Stage -->
-                    <Grid x:Name="ViewStageHost" Grid.Row="1">
-                        <Grid.RenderTransform>
-                            <TranslateTransform x:Name="ViewStageTransform" Y="0" />
-                        </Grid.RenderTransform>
-                        <views:FocusView x:Name="FocusViewControl" DataContext="{Binding FocusVM}" Visibility="{Binding DataContext.IsFocusView, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
-                        <views:TasksView x:Name="TasksViewControl" DataContext="{Binding TasksVM}" Visibility="{Binding DataContext.IsTasksView, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
-                        <views:StatsView x:Name="StatsViewControl" DataContext="{Binding StatsVM}" Visibility="{Binding DataContext.IsStatsView, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
-                        <views:AmbientAudioView x:Name="AudioViewControl" DataContext="{Binding AudioVM}" Visibility="{Binding DataContext.IsAudioView, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
-                        <views:SettingsView x:Name="SettingsViewControl" DataContext="{Binding SettingsVM}" Visibility="{Binding DataContext.IsSettingsView, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
-                    </Grid>
-
-                    <!-- Bottom-Centered Snackbar -->
-                    <Border Grid.Row="1"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Bottom"
-                            Margin="0,0,0,22"
-                            Height="44"
-                            CornerRadius="12"
-                            Padding="16,0"
-                            Background="{DynamicResource Surface.Solid}"
-                            BorderBrush="{DynamicResource Stroke.Strong}"
-                            BorderThickness="1"
-                            Visibility="{Binding IsSnackbarVisible, Converter={StaticResource BoolToVis}}">
-                        <Border.Effect>
-                            <DropShadowEffect Color="{DynamicResource Shadow.Color}" BlurRadius="22" ShadowDepth="6" Opacity="{DynamicResource Shadow.Opacity}" />
-                        </Border.Effect>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding SnackbarMessage}" FontSize="13" Foreground="{DynamicResource Text.Primary}" VerticalAlignment="Center" />
-                            <Button Content="{Binding SnackbarActionText}"
-                                    Command="{Binding SnackbarActionCommand}"
-                                    Style="{StaticResource Button.Ghost}"
-                                    Foreground="{DynamicResource Accent}"
-                                    FontWeight="SemiBold"
-                                    Margin="12,0,-6,0"
-                                    Visibility="{Binding HasSnackbarAction, Converter={StaticResource BoolToVis}}" />
-                        </StackPanel>
-                    </Border>
-                </Grid>
             </Grid>
         </Grid>
 
@@ -512,11 +697,11 @@
               Visibility="{Binding HasAnyModalOpen, Converter={StaticResource BoolToVis}}"
               MouseLeftButtonDown="OnOverlayBackdropClick">
 
-            <!-- Modal A: New / Edit Task Dialog -->
+            <!-- Modal A: New / Edit Task Dialog (macOS Sheet) -->
             <Border Width="460"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
-                    CornerRadius="20"
+                    CornerRadius="18"
                     Padding="24"
                     Background="{DynamicResource Surface.Solid}"
                     BorderBrush="{DynamicResource Stroke.Strong}"
@@ -524,7 +709,7 @@
                     MouseLeftButtonDown="OnModalCardMouseDown"
                     Visibility="{Binding IsTaskModalOpen, Converter={StaticResource BoolToVis}}">
                 <Border.Effect>
-                    <DropShadowEffect Color="{DynamicResource Shadow.Color}" BlurRadius="40" ShadowDepth="12" Opacity="0.55" />
+                    <DropShadowEffect Color="{DynamicResource Shadow.Color}" BlurRadius="48" ShadowDepth="14" Opacity="0.32" />
                 </Border.Effect>
                 <StackPanel>
                     <Grid Margin="0,0,0,16">
@@ -611,17 +796,17 @@
                              themes:ControlProps.Placeholder="输入后回车添加" />
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-                        <Button Content="取消" Command="{Binding CloseAnyModalCommand}" Style="{StaticResource Button.Secondary}" Margin="0,0,10,0" />
-                        <Button Content="保存" Command="{Binding SaveTaskModalCommand}" Style="{StaticResource Button.Primary}" />
+                        <Button Content="取消" Command="{Binding CloseAnyModalCommand}" Style="{StaticResource Button.Secondary}" Height="34" MinWidth="80" Margin="0,0,10,0" />
+                        <Button Content="保存" Command="{Binding SaveTaskModalCommand}" Style="{StaticResource Button.Primary}" Height="34" MinWidth="80" />
                     </StackPanel>
                 </StackPanel>
             </Border>
 
-            <!-- Modal B: Confirmation Dialog -->
+            <!-- Modal B: Confirmation Dialog (macOS Sheet) -->
             <Border Width="420"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
-                    CornerRadius="20"
+                    CornerRadius="18"
                     Padding="24"
                     Background="{DynamicResource Surface.Solid}"
                     BorderBrush="{DynamicResource Stroke.Strong}"
@@ -629,24 +814,24 @@
                     MouseLeftButtonDown="OnModalCardMouseDown"
                     Visibility="{Binding IsConfirmModalOpen, Converter={StaticResource BoolToVis}}">
                 <Border.Effect>
-                    <DropShadowEffect Color="{DynamicResource Shadow.Color}" BlurRadius="40" ShadowDepth="12" Opacity="0.55" />
+                    <DropShadowEffect Color="{DynamicResource Shadow.Color}" BlurRadius="48" ShadowDepth="14" Opacity="0.32" />
                 </Border.Effect>
                 <StackPanel>
                     <TextBlock Text="{Binding ConfirmTitle}" Style="{StaticResource Text.SectionTitle}" Margin="0,0,0,10" />
                     <TextBlock Text="{Binding ConfirmMessage}" Style="{StaticResource TextStyle.Secondary}" TextWrapping="Wrap" Margin="0,0,0,22" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="{Binding ConfirmCancelText}" Command="{Binding CloseAnyModalCommand}" Style="{StaticResource Button.Secondary}" Margin="0,0,10,0" />
-                        <Button Content="{Binding ConfirmOkText}" Command="{Binding ConfirmModalOkCommand}" Style="{StaticResource Button.Primary}" Visibility="{Binding ConfirmIsDanger, Converter={StaticResource InvBoolToVis}}" />
-                        <Button Content="{Binding ConfirmOkText}" Command="{Binding ConfirmModalOkCommand}" Style="{StaticResource Button.Danger}" Visibility="{Binding ConfirmIsDanger, Converter={StaticResource BoolToVis}}" />
+                        <Button Content="{Binding ConfirmCancelText}" Command="{Binding CloseAnyModalCommand}" Style="{StaticResource Button.Secondary}" Height="34" MinWidth="80" Margin="0,0,10,0" />
+                        <Button Content="{Binding ConfirmOkText}" Command="{Binding ConfirmModalOkCommand}" Style="{StaticResource Button.Primary}" Height="34" MinWidth="80" Visibility="{Binding ConfirmIsDanger, Converter={StaticResource InvBoolToVis}}" />
+                        <Button Content="{Binding ConfirmOkText}" Command="{Binding ConfirmModalOkCommand}" Style="{StaticResource Button.Danger}" Height="34" MinWidth="80" Visibility="{Binding ConfirmIsDanger, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>
                 </StackPanel>
             </Border>
 
-            <!-- Modal C: Clear All Data Double Confirmation Dialog -->
+            <!-- Modal C: Clear All Data Double Confirmation Dialog (macOS Sheet) -->
             <Border Width="440"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
-                    CornerRadius="20"
+                    CornerRadius="18"
                     Padding="24"
                     Background="{DynamicResource Surface.Solid}"
                     BorderBrush="{DynamicResource Stroke.Strong}"
@@ -654,15 +839,15 @@
                     MouseLeftButtonDown="OnModalCardMouseDown"
                     Visibility="{Binding IsClearDataModalOpen, Converter={StaticResource BoolToVis}}">
                 <Border.Effect>
-                    <DropShadowEffect Color="{DynamicResource Shadow.Color}" BlurRadius="40" ShadowDepth="12" Opacity="0.55" />
+                    <DropShadowEffect Color="{DynamicResource Shadow.Color}" BlurRadius="48" ShadowDepth="14" Opacity="0.32" />
                 </Border.Effect>
                 <StackPanel>
                     <TextBlock Text="清空所有数据？" Style="{StaticResource Text.SectionTitle}" Foreground="{DynamicResource Danger}" Margin="0,0,0,8" />
                     <TextBlock Text="此操作将永久删除全部任务与专注历史记录且无法恢复。请在下方输入「清空」二字确认：" Style="{StaticResource TextStyle.Secondary}" TextWrapping="Wrap" Margin="0,0,0,14" />
                     <TextBox Text="{Binding ClearDataInput, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource AppTextBox}" themes:ControlProps.Placeholder="请输入：清空" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-                        <Button Content="取消" Command="{Binding CloseAnyModalCommand}" Style="{StaticResource Button.Secondary}" Margin="0,0,10,0" />
-                        <Button Content="确认清空" Command="{Binding ConfirmClearDataCommand}" Style="{StaticResource Button.Danger}" />
+                        <Button Content="取消" Command="{Binding CloseAnyModalCommand}" Style="{StaticResource Button.Secondary}" Height="34" MinWidth="80" Margin="0,0,10,0" />
+                        <Button Content="确认清空" Command="{Binding ConfirmClearDataCommand}" Style="{StaticResource Button.Danger}" Height="34" MinWidth="80" />
                     </StackPanel>
                 </StackPanel>
             </Border>

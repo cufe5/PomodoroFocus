@@ -14,7 +14,7 @@
     <Grid Margin="{Binding Main.PageHorizontalPadding}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="440" />
-            <ColumnDefinition x:Name="RightRailCol" Width="300" />
+            <ColumnDefinition x:Name="RightRailCol" Width="288" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -30,11 +30,11 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- 1. Top Phase SegmentedControl -->
+            <!-- 1. Top Phase SegmentedControl (macOS NSSegmentedControl) -->
             <controls:SegmentedControl x:Name="ModeSegmentControl"
                                        Grid.Row="0"
-                                       Width="352"
-                                       SegmentHeight="32"
+                                       Width="348"
+                                       SegmentHeight="30"
                                        UsePhaseAccent="True"
                                        Items="{Binding ModeOptions}"
                                        SelectedKey="{Binding SelectedModeKey, Mode=OneWay}"
@@ -116,14 +116,16 @@
                         </Button.Style>
                         <TextBlock x:Name="TimerDisplayText"
                                    AutomationProperties.AutomationId="TimerDisplayText"
-                                   Text="{Binding TimerText}"
+                                   AutomationProperties.Name="{Binding TimerText}"
                                    FontFamily="{StaticResource Font.Display}"
                                    FontSize="{Binding TimerFontSize}"
-                                   FontWeight="Light"
+                                   FontWeight="Medium"
                                    Foreground="{DynamicResource Text.Primary}"
                                    Typography.NumeralAlignment="Tabular"
                                    HorizontalAlignment="Center"
-                                   TextAlignment="Center" />
+                                   TextAlignment="Center">
+                            <Run Text="{Binding TimerLeadText, Mode=OneWay}" /><InlineUIContainer BaselineAlignment="Baseline"><TextBlock Text=":" FontFamily="{StaticResource Font.Display}" FontSize="{Binding TimerFontSize}" FontWeight="Medium" Foreground="{DynamicResource Text.Primary}" Margin="1,0"><TextBlock.RenderTransform><TranslateTransform Y="-5.5" /></TextBlock.RenderTransform></TextBlock></InlineUIContainer><Run Text="{Binding TimerTrailText, Mode=OneWay}" />
+                        </TextBlock>
                     </Button>
 
                     <!-- Custom Duration Popup -->
@@ -423,66 +425,36 @@
             </Grid>
         </Grid>
 
-        <!-- Right Auxiliary Rail (Standard width >= 980) -->
-        <Grid x:Name="RightRailPanel" Grid.Row="0" Grid.Column="1" Margin="8,0,0,0">
+        <!-- Right Auxiliary Rail (Standard width >= 980, adaptive compact height) -->
+        <Grid x:Name="RightRailPanel" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="8,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- Card 1: Today Goal -->
-            <Border Grid.Row="0" Style="{StaticResource CardBorder}" Padding="16" Margin="0,0,0,12">
-                <StackPanel>
-                    <Grid Margin="0,0,0,10">
-                        <TextBlock Text="今日目标" Style="{StaticResource Text.CardTitle}" HorizontalAlignment="Left" />
-                        <TextBlock Text="{Binding TodayGoalCountText}"
-                                   FontSize="13"
-                                   FontWeight="SemiBold"
-                                   Foreground="{DynamicResource Phase.StartBrush}"
-                                   Typography.NumeralAlignment="Tabular"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" />
-                    </Grid>
-                    <Grid Height="8" Margin="0,0,0,8">
-                        <Border CornerRadius="4" Background="{DynamicResource Ring.Track}" />
-                        <ProgressBar Value="{Binding TodayGoalPercent, Mode=OneWay}" Maximum="100" Height="8" Background="Transparent" BorderThickness="0">
-                            <ProgressBar.Template>
-                                <ControlTemplate TargetType="ProgressBar">
-                                    <Grid x:Name="PART_Track">
-                                        <Border x:Name="PART_Indicator" HorizontalAlignment="Left" CornerRadius="4" Background="{DynamicResource Phase.Gradient}" />
-                                    </Grid>
-                                </ControlTemplate>
-                            </ProgressBar.Template>
-                        </ProgressBar>
-                    </Grid>
-                    <TextBlock Text="{Binding TodayGoalSubText}" Style="{StaticResource Text.Caption}" TextTrimming="CharacterEllipsis" />
-                </StackPanel>
-            </Border>
-
-            <!-- Card 2: Today Focus Records -->
-            <Border Grid.Row="1" Style="{StaticResource CardBorder}" Padding="16" Margin="0,0,0,12">
+            <!-- Card 1: Today Focus Records (compact MaxHeight eliminates dead space) -->
+            <Border Grid.Row="0" Style="{StaticResource CardBorder}" Padding="16">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0" Margin="0,0,0,10">
                         <TextBlock Text="今日专注记录" Style="{StaticResource Text.CardTitle}" HorizontalAlignment="Left" />
                         <TextBlock Text="{Binding TodayRecordsCountText}" Style="{StaticResource Text.Caption}" HorizontalAlignment="Right" VerticalAlignment="Center" />
                     </Grid>
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Visibility="{Binding HasTodayRecords, Converter={StaticResource BoolToVis}}">
+                    <ScrollViewer Grid.Row="1" MaxHeight="250" VerticalScrollBarVisibility="Auto" Visibility="{Binding HasTodayRecords, Converter={StaticResource BoolToVis}}">
                         <ItemsControl ItemsSource="{Binding TodayRecords}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border CornerRadius="10" Background="{DynamicResource Surface.2}" Padding="10,8" Margin="0,0,0,6">
+                                    <Border BorderBrush="{DynamicResource Stroke.Subtle}" BorderThickness="0,0,0,1" Padding="4,9">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            <Ellipse Grid.Column="0" Width="6" Height="6" Margin="0,0,8,0" VerticalAlignment="Center">
+                                            <Ellipse Grid.Column="0" Width="6" Height="6" Margin="0,0,10,0" VerticalAlignment="Center">
                                                 <Ellipse.Style>
                                                     <Style TargetType="Ellipse">
                                                         <Setter Property="Fill" Value="{DynamicResource Phase.StartBrush}" />
@@ -518,6 +490,7 @@
                         </ItemsControl>
                     </ScrollViewer>
                     <StackPanel Grid.Row="1"
+                                Margin="0,18"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
                                 Visibility="{Binding HasTodayRecords, Converter={StaticResource InvBoolToVis}}">
@@ -527,8 +500,8 @@
                 </Grid>
             </Border>
 
-            <!-- Card 3: Quick Ambient Audio Bar -->
-            <Border Grid.Row="2" Style="{StaticResource CardBorder}" Padding="16">
+            <!-- Card 2: Quick Ambient Audio Bar -->
+            <Border Grid.Row="1" Style="{StaticResource CardBorder}" Padding="16" Margin="0,14,0,0">
                 <StackPanel>
                     <Grid Margin="0,0,0,10">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -572,7 +545,7 @@
                                 <Button Command="{Binding DataContext.ToggleQuickSoundCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding Id}"
                                         ToolTip="{Binding Name}"
-                                        Height="48"
+                                        Height="52"
                                         Margin="3,0"
                                         Cursor="Hand">
                                     <Button.Template>
@@ -587,33 +560,46 @@
                                                             <DataTrigger Binding="{Binding IsActive}" Value="True">
                                                                 <Setter Property="Background" Value="{Binding ActiveBgBrush}" />
                                                                 <Setter Property="BorderBrush" Value="{Binding TintBorderBrush}" />
-                                                                <Setter Property="BorderThickness" Value="1.5" />
+                                                                <Setter Property="BorderThickness" Value="1" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
                                                 </Border.Style>
                                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                    <Path Data="{Binding GeometryKey, Converter={StaticResource GeoConverter}}"
-                                                          Width="16"
-                                                          Height="16"
-                                                          Stretch="Uniform"
-                                                          StrokeThickness="1.75"
-                                                          StrokeStartLineCap="Round"
-                                                          StrokeEndLineCap="Round"
-                                                          StrokeLineJoin="Round"
-                                                          HorizontalAlignment="Center">
-                                                        <Path.Style>
-                                                            <Style TargetType="Path">
-                                                                <Setter Property="Stroke" Value="{DynamicResource Text.Secondary}" />
+                                                    <Border Width="26" Height="26" CornerRadius="999" HorizontalAlignment="Center">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Background" Value="Transparent" />
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                                                        <Setter Property="Stroke" Value="{Binding TintBrush}" />
+                                                                        <Setter Property="Background" Value="{Binding TintBrush}" />
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
-                                                        </Path.Style>
-                                                    </Path>
-                                                    <TextBlock Text="{Binding ShortName}" FontSize="10.5" HorizontalAlignment="Center" Margin="0,3,0,0">
+                                                        </Border.Style>
+                                                        <Path Data="{Binding GeometryKey, Converter={StaticResource GeoConverter}}"
+                                                              Width="14"
+                                                              Height="14"
+                                                              Stretch="Uniform"
+                                                              StrokeThickness="1.75"
+                                                              StrokeStartLineCap="Round"
+                                                              StrokeEndLineCap="Round"
+                                                              StrokeLineJoin="Round"
+                                                              HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center">
+                                                            <Path.Style>
+                                                                <Style TargetType="Path">
+                                                                    <Setter Property="Stroke" Value="{DynamicResource Text.Secondary}" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                                            <Setter Property="Stroke" Value="#FFFFFFFF" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Path.Style>
+                                                        </Path>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding ShortName}" FontSize="10.5" HorizontalAlignment="Center" Margin="0,2,0,0">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
                                                                 <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
