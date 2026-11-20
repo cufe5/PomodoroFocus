@@ -1,0 +1,105 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Segoe Fluent Icons code points (verified on host Windows 11) -->
+    <sys:String x:Key="Icon.Play">&#xF5B0;</sys:String>
+    <sys:String x:Key="Icon.Pause">&#xF8AE;</sys:String>
+    <sys:String x:Key="Icon.Reset">&#xE777;</sys:String>
+    <sys:String x:Key="Icon.Skip">&#xE893;</sys:String>
+    <sys:String x:Key="Icon.Stopwatch">&#xE916;</sys:String>
+    <sys:String x:Key="Icon.NavFocus">&#xE917;</sys:String>
+    <sys:String x:Key="Icon.NavTasks">&#xE9D5;</sys:String>
+    <sys:String x:Key="Icon.NavStats">&#xE9D2;</sys:String>
+    <sys:String x:Key="Icon.NavAudio">&#xE7F6;</sys:String>
+    <sys:String x:Key="Icon.NavSettings">&#xE713;</sys:String>
+    <sys:String x:Key="Icon.Add">&#xE710;</sys:String>
+    <sys:String x:Key="Icon.Delete">&#xE74D;</sys:String>
+    <sys:String x:Key="Icon.Edit">&#xE70F;</sys:String>
+    <sys:String x:Key="Icon.Search">&#xE721;</sys:String>
+    <sys:String x:Key="Icon.CircleEmpty">&#xEA3A;</sys:String>
+    <sys:String x:Key="Icon.CircleCheck">&#xEC61;</sys:String>
+    <sys:String x:Key="Icon.Check">&#xE73E;</sys:String>
+    <sys:String x:Key="Icon.Close">&#xE711;</sys:String>
+    <sys:String x:Key="Icon.CaptionMinimize">&#xE921;</sys:String>
+    <sys:String x:Key="Icon.CaptionMaximize">&#xE922;</sys:String>
+    <sys:String x:Key="Icon.CaptionRestore">&#xE923;</sys:String>
+    <sys:String x:Key="Icon.CaptionClose">&#xE8BB;</sys:String>
+    <sys:String x:Key="Icon.Pin">&#xE718;</sys:String>
+    <sys:String x:Key="Icon.Unpin">&#xE77A;</sys:String>
+    <sys:String x:Key="Icon.MiniEnter">&#xEE49;</sys:String>
+    <sys:String x:Key="Icon.MiniExit">&#xEE47;</sys:String>
+    <sys:String x:Key="Icon.Tag">&#xE8EC;</sys:String>
+    <sys:String x:Key="Icon.Flag">&#xE7C1;</sys:String>
+    <sys:String x:Key="Icon.Sort">&#xE8CB;</sys:String>
+    <sys:String x:Key="Icon.Calendar">&#xE787;</sys:String>
+    <sys:String x:Key="Icon.Volume">&#xE767;</sys:String>
+    <sys:String x:Key="Icon.Mute">&#xE74F;</sys:String>
+    <sys:String x:Key="Icon.Bell">&#xEA8F;</sys:String>
+    <sys:String x:Key="Icon.Theme">&#xE790;</sys:String>
+    <sys:String x:Key="Icon.Keyboard">&#xE765;</sys:String>
+    <sys:String x:Key="Icon.Power">&#xE7E8;</sys:String>
+    <sys:String x:Key="Icon.Folder">&#xE838;</sys:String>
+    <sys:String x:Key="Icon.Export">&#xEDE1;</sys:String>
+    <sys:String x:Key="Icon.Import">&#xE8B5;</sys:String>
+    <sys:String x:Key="Icon.Info">&#xE946;</sys:String>
+    <sys:String x:Key="Icon.Warning">&#xE7BA;</sys:String>
+    <sys:String x:Key="Icon.ChevronDown">&#xE70D;</sys:String>
+    <sys:String x:Key="Icon.ChevronRight">&#xE76C;</sys:String>
+    <sys:String x:Key="Icon.More">&#xE712;</sys:String>
+
+    <!-- Lucide-style linear icon geometries (24x24 viewbox, ISC license) -->
+    <Geometry x:Key="Geo.rain">M4 14.9 A7 7 0 1 1 15.71 8 H17.5 A4.5 4.5 0 0 1 20 16.24 M16 14 V20 M8 14 V20 M12 16 V22</Geometry>
+    <Geometry x:Key="Geo.waves">M2 6 C2.6 6.5 3.2 7 4.5 7 C7 7 7 5 9.5 5 C12.1 5 11.9 7 14.5 7 C17 7 17 5 19.5 5 C20.8 5 21.4 5.5 22 6 M2 12 C2.6 12.5 3.2 13 4.5 13 C7 13 7 11 9.5 11 C12.1 11 11.9 13 14.5 13 C17 13 17 11 19.5 11 C20.8 11 21.4 11.5 22 12 M2 18 C2.6 18.5 3.2 19 4.5 19 C7 19 7 17 9.5 17 C12.1 17 11.9 19 14.5 19 C17 19 17 17 19.5 17 C20.8 17 21.4 17.5 22 18</Geometry>
+    <Geometry x:Key="Geo.tree">M17 14 L20 17.3 A1 1 0 0 1 19.3 19 H4.7 A1 1 0 0 1 4 17.3 L7 14 H6.7 A1 1 0 0 1 6 12.3 L9 9 H8.8 A1 1 0 0 1 8 7.3 L12 3 L16 7.3 A1 1 0 0 1 15.2 9 H15 L18 12.3 A1 1 0 0 1 17.3 14 Z M12 22 V19</Geometry>
+    <Geometry x:Key="Geo.coffee">M10 2 V4 M14 2 V4 M6 2 V4 M16 8 A1 1 0 0 1 17 9 V17 A4 4 0 0 1 13 21 H7 A4 4 0 0 1 3 17 V9 A1 1 0 0 1 4 8 H18 A4 4 0 1 1 18 16 H17</Geometry>
+    <Geometry x:Key="Geo.flame">M8.5 14.5 A2.5 2.5 0 0 0 11 12 C11 10.62 10.5 10 10 9 C8.93 6.86 9.78 4.95 12 3 C12.5 5.5 14 7.9 16 9.5 C18 11.1 19 13 19 15 A7 7 0 1 1 5 15 C5 13.85 5.43 12.71 6 12 A2.5 2.5 0 0 0 8.5 14.5 Z</Geometry>
+    <Geometry x:Key="Geo.wave">M2 13 A2 2 0 0 0 4 11 V7 A2 2 0 0 1 8 7 V20 A2 2 0 0 0 12 20 V4 A2 2 0 0 1 16 4 V17 A2 2 0 0 0 20 17 V13 A2 2 0 0 1 22 11</Geometry>
+    <Geometry x:Key="Geo.wind">M12.8 19.6 A2 2 0 1 0 14 16 H2 M17.5 8 A2.5 2.5 0 1 1 19.5 12 H2 M9.8 4.4 A2 2 0 1 1 11 8 H2</Geometry>
+    <Geometry x:Key="Geo.clock">M12 2 A10 10 0 1 1 11.99 2 Z M12 6 V12 L16 14</Geometry>
+    <Geometry x:Key="Geo.moon">M12 3 A6 6 0 0 0 21 12 A9 9 0 1 1 12 3 Z</Geometry>
+
+    <!-- Brand Logo DrawingImage (256x256 canvas) -->
+    <DrawingImage x:Key="Logo">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing>
+                    <GeometryDrawing.Brush>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF9F68" Offset="0" />
+                            <GradientStop Color="#FF5A5F" Offset="1" />
+                        </LinearGradientBrush>
+                    </GeometryDrawing.Brush>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,256,256" RadiusX="60" RadiusY="60" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#FFFFFF" Thickness="22" StartLineCap="Round" EndLineCap="Round" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry>
+                            <PathFigure StartPoint="163,81.38" IsClosed="False">
+                                <ArcSegment Point="93,81.38" Size="70,70" IsLargeArc="True" SweepDirection="Clockwise" />
+                            </PathFigure>
+                        </PathGeometry>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#34D399">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M128 82 C112 56 132 36 162 40 C158 64 144 78 128 82 Z" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#34D399" Thickness="8" StartLineCap="Round" EndLineCap="Round" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="128,82" EndPoint="128,60" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+</ResourceDictionary>
